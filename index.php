@@ -4,31 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INVILARA</title>
+    <link rel="stylesheet" href="./templates/style.css">
+    <link rel="shortcut icon" href="./templates/logo.jpg" type="image/x-icon">
 </head>
 <body>
-    <?php require_once './templates/style.php'; ?>
-    <main>
-        <form action="login.php" method="post">
+    <?php 
+    include ('./funciones/funcion_inicio.php');
+    ?>
 
-            <input type="text" name="username" id="username" placeholder="Usuario" required>
-            <input type="password" name="password" id="password" placeholder="Contraseña" required>
-            
-            <a class="recuperacion" href="recuperar_contrasena.php">Recuperar Contraseña</a>
-            <a class="recuperacion" href="recuperar_usuario.php">Recuperar Usuario</a>
-            
-            <input type="submit" value="Iniciar">
+    <main>
+        <form method="post" autocomplete="off">
+            <div class="logo-header">
+                <img src="./templates/logo.jpg" alt="INVILARA Logo">
+                <h1>INVILARA</h1>
+            </div>
+            <input type="text" name="username" id="username" placeholder="Usuario">
+            <input type="password" name="password" id="password" placeholder="Contraseña">
+            <input type="submit" value="Iniciar" name="iniciar">
         </form>
     </main>
-    <script>
-        document.querySelector('form').addEventListener('submit', function(event) {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-
-            if (username === '' || password === '') {
-                event.preventDefault();
-                alert('Por favor, complete todos los campos.');
-            }
-        });
-    </script>
 </body>
 </html>

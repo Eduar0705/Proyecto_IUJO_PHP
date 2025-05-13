@@ -1,0 +1,205 @@
+/* Reinicio y estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+/* Estilos del encabezado */
+header {
+    background-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* Estilos de navegación */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.logo-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-header img {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+}
+
+.logo-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+nav ul li a {
+    color: #7f8c8d;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #3498db;
+}
+
+nav ul li a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #3498db;
+    transition: width 0.3s ease;
+}
+
+nav ul li a:hover::after {
+    width: 100%;
+}
+/*estilos del formulario */
+form {
+    margin: 25% 25%;
+    background-color: white;
+    border-radius: 16px;
+    padding: 50px 40px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    min-width: 400px;
+    max-width: 600px;
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+form::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #ff4d4d, #ffb347);
+}
+
+/* Campos de entrada */
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    color: #333333;
+}
+
+input::placeholder {
+    color: #999999;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus, 
+input[type="email"]:focus {
+    outline: none;
+    border-color: #ff4d4d;
+    box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.2);
+    background-color: white;
+}
+
+/* Botón de envío */
+input[type="submit"], button {
+    width: 100%;
+    background: linear-gradient(to right, #ff4d4d, #ffb347);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 6px rgba(255, 77, 77, 0.3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+input[type="submit"]:hover {
+    background: linear-gradient(to right, #ff3333, #ffa726);
+    box-shadow: 0 6px 10px rgba(255, 77, 77, 0.4);
+    transform: translateY(-2px);
+}
+
+input[type="submit"]:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(255, 77, 77, 0.3);
+}
+
+/* Estilos responsivos */
+@media (max-width: 500px) {
+    header {
+        padding: 1rem;
+    }
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    nav ul {
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        margin-top: 1rem;
+    }
+    nav ul li {
+        width: 100%;
+        border-bottom: 1px solid #ecf0f1;
+        padding-bottom: 0.5rem;
+    }
+    nav ul li:last-child {
+        border-bottom: none;
+    }
+    form {
+        padding: 30px 20px;
+    }
+    main {
+        padding: 15px;
+    }
+    .logo-header h1 {
+        font-size: 24px;
+    }
+    .logo-header img {
+        width: 60px;
+        height: 60px;
+    }
+}
