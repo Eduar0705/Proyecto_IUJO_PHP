@@ -46,6 +46,19 @@ nav {
     font-weight: 700;
     margin: 0;
 }
+.logo h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 5px;
+    padding: 10px;
+}
+.logo{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 20px;
+    margin: 10px;
+}
 
 nav ul {
     display: flex;
@@ -112,7 +125,8 @@ form::before {
 /* Campos de entrada */
 input[type="text"],
 input[type="password"],
-input[type="email"] {
+input[type="email"],
+#cargo{
     width: 100%;
     padding: 15px;
     margin-bottom: 20px;
@@ -130,7 +144,8 @@ input::placeholder {
 
 input[type="text"]:focus,
 input[type="password"]:focus, 
-input[type="email"]:focus {
+input[type="email"]:focus,
+#cargo:focus {
     outline: none;
     border-color: #ff4d4d;
     box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.2);
@@ -165,7 +180,18 @@ input[type="submit"]:active {
     transform: translateY(1px);
     box-shadow: 0 2px 4px rgba(255, 77, 77, 0.3);
 }
-
+/* Estilos del footer */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #f1f1f1;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+    color: #757575;
+}
 /* Estilos responsivos */
 @media (max-width: 500px) {
     header {

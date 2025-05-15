@@ -5,15 +5,16 @@ if (isset($_POST['registar'])){
     //VERIFICACION SI LOS CAMPOS ESTAN RELLENOS
     if(strlen($_POST['nombre']) >=3 && strlen($_POST['username']) >= 3
     && strlen($_POST['CI']) >= 7 && strlen($_POST['password']) >= 5
-    && strlen($_POST['email']) >= 5){
+    && strlen($_POST['email']) >= 5 && strlen($_POST['cargo']) >= 0) {
 
         //CREACION DE VARIABLES
         $name = trim($_POST['nombre']);
         $usuario = trim($_POST['username']);
         $cedula = trim($_POST['CI']);
-        $clave = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
+        $clave = trim($_POST['password']);
         $correo = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
         $fechas = date("d/m/Y");
+        $cargo = trim($_POST['cargo']);
 
         //VERIFICACION SI YA SE ENCUENTRAN EN LA BASE DE DATOS
         $stmt = $conex->prepare("SELECT * FROM informacion WHERE usuario = ? OR email = ? OR cedula = ?");
@@ -37,7 +38,7 @@ if (isset($_POST['registar'])){
             }
         }
         else{
-            $consulta = "INSERT INTO informacion(nombre, usuario, clave, email, cedula, fecha) VALUES ('$name','$usuario','$clave','$correo','$cedula','$fechas')";
+            $consulta = "INSERT INTO informacion(nombre, usuario, clave, email, cedula, id_cargo, fecha) VALUES ('$name','$usuario','$clave','$correo','$cedula','$cargo','$fechas')";
             $resultado = mysqli_query($conex, $consulta); 
 
             if ($resultado) {

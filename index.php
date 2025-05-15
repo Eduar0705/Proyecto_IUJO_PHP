@@ -11,7 +11,6 @@
     <?php 
     include ('./funciones/funcion_inicio.php');
     ?>
-
     <main>
         <form method="post" autocomplete="off">
             <div class="logo-header">
