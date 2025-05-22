@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INVILARA-Registro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../templates/admin.css">
     <link rel="shortcut icon" href="./templates/logo.jpg" type="image/x-icon">
 </head>
@@ -18,10 +19,14 @@
         $nombre = "Invitado";
     }
     ?>
-    <header>
+   <header class="admin-header">
         <?php include ('./inc/nav_admin.php'); ?>
     </header>
-    <main>
+   <div class="sidebar-container">
+       <?php include ('./inc/menu_admin.php'); ?>
+    </div>
+    
+    <main class="main-content">
         <form method="post" autocomplete="off">
             <div class="logo">
                 <img src="../templates/logo.jpg" alt="INVILARA Logo">
@@ -40,6 +45,8 @@
             <input type="submit" value="Registar" name="registar">
         </form>
     </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="./inc/menu.js"></script>
     <footer>
         <div class="footer-content">
             <p>&copy; 2023 INVILARA. Todos los derechos reservados.</p>
