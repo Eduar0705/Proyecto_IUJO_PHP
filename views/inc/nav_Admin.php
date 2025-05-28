@@ -4,14 +4,14 @@
     </button>
     
     <div class="logo-header">
-        <img src="../templates/logo.jpg" alt="INVILARA Logo">
+        <img src="./img/logo.jpg" alt="INVILARA Logo">
         <h1>INVILARA</h1>
     </div>
     
     <div class="user-nav">
         <span class="welcome-msg"><?php echo "Bienvenido " . htmlspecialchars($nombre); ?></span>
         <div class="user-actions">
-            <a href="./registro.php" class="btn-user-action">
+            <a href="./Registro.php" class="btn-user-action">
                 <i class="fas fa-user-plus"></i>
                 <span>Registros</span>
             </a>

@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INVILARA-Usuarios</title>
-    <link rel="stylesheet" href="../templates/admin.css">
-    <link rel="shortcut icon" href="./templates/logo.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="./views/css/style.css">
+    <link rel="shortcut icon" href="./views/img/logo.jpg" type="image/x-icon">
 </head>
-<?php
+<?php /*
 include ('../funciones/funcion_inicio.php'); 
 if (isset($_SESSION['nombre'])) {
     $nombre = htmlspecialchars($_SESSION['nombre']);
 } else {
     $nombre = "Invitado";
-}
+}*/
 ?>
 <body>
     <header>
-        <?php include ('./inc/nav_user.php'); ?>
+        <?php //include ('./inc/nav_user.php'); ?>
     </header>
     <main>
         <h1>Bienvenido al Panel de Usuarios</h1>

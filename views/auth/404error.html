@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página no encontrada - Error 404</title>
+    <style>
+        /* estilos base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #343a40;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            background-image: radial-gradient(circle at 10% 20%, #e9ecef 0%, #f8f9fa 90%);
+        }
+        
+        /* Contenedor principal */
+        .error-container {
+            max-width: 600px;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Efecto decorativo */
+        .error-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #6c5ce7, #00cec9, #fd79a8, #6c5ce7);
+            background-size: 400% 400%;
+            animation: gradientBG 8s ease infinite;
+        }
+        
+        /* Animación del fondo degradado */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Estilos del código de error */
+        .error-code {
+            font-size: 120px;
+            font-weight: 900;
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            line-height: 1;
+            text-shadow: 5px 5px 0 rgba(108, 92, 231, 0.1);
+        }
+        
+        /* Estilos del título */
+        .error-title {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: #2d3436;
+        }
+        
+        /* Estilos del mensaje */
+        .error-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #636e72;
+            line-height: 1.6;
+        }
+        
+        /* Botón de acción */
+        .home-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #6c5ce7;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+        }
+        .home-button:hover {
+            background: #5649c0;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+        }
+        
+        /* Ilustración */
+        .error-illustration {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            background-color: #f1f1f1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: #6c5ce7;
+        }
+        
+        /* Efecto de animación */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .error-code {
+                font-size: 80px;
+            }
+            .error-title {
+                font-size: 24px;
+            }
+            .error-message {
+                font-size: 16px;
+            }
+            .error-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-illustration floating">
+            <span>!</span>
+        </div>
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">Página no encontrada</h2>
+        <p class="error-message">Lo sentimos, la página que estás buscando no existe o ha sido movida. Puedes volver a la página de inicio o intentar buscar lo que necesitas.</p>
+        <a href="/" class="home-button">Volver al inicio</a>
+    </div>
+</body>
+</html>
