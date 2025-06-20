@@ -5,7 +5,7 @@
         <br><br><br><br>
         <div class="auth-container shadow-sm p-4">
             <h2 class="text-center mb-4">Registro de Usuario</h2> 
-            <form action="?action=register&method=registerStore" method="post">
+            <form action="?action=inicio&method=registerStore" method="post">
                 <div class="mb-3">
                     <label for="name" class="form-label">Nombre Completo</label>
                     <input type="text" class="form-control" name="nombre" id="nombre" required>
@@ -15,20 +15,20 @@
                     <input type="text" class="form-control" name="username" id="username" required>
                 </div>
                 <div class="mb-3">
-                    <label for="password" class="form-label">Cedula</label>
+                    <label for="cedula" class="form-label">Cedula</label>
                     <input type="text" class="form-control" name="CI" id="CI" required>
                 </div>
                 <div class="mb-3">
-                    <label for="confirm_password" class="form-label">Contraseña</label>
+                    <label for="password" class="form-label">Contraseña</label>
                     <input type="password" class="form-control" name="password" id="password" required>
                 </div>
                 <div class="mb-3">
-                    <label for="confirm_password" class="form-label">Correo</label>
+                <label for="confirm_password" class="form-label">Confirmar Contraseña</label>
+                <input type="password" class="form-control" name="password2" id="password2" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Correo</label>
                     <input type="email" class="form-control" name="email" id="email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="confirm_password" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" name="password" id="password" required>
                 </div>
                 <div class="d-grid mb-3">
                     <button type="submit" class="btn btn-primary">Registrarse</button>
