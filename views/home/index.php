@@ -32,7 +32,7 @@
                 <div class="text-center">
                     <h2 class="display-4 fw-bold mb-3 text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Mantenimiento Vial</h2>
                     <p class="fs-4 mb-4 text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">Programas de mantenimiento preventivo y correctivo.</p>
-                    <a href="?action=about" class="btn btn-outline-light btn-lg px-4">
+                    <a href="?action=inicio&method=about" class="btn btn-outline-light btn-lg px-4">
                         Ver más <i class="bi bi-arrow-right ms-2"></i>
                     </a>
                 </div>
@@ -109,7 +109,7 @@
                     <i class="bi bi-check-circle-fill text-danger fs-4 me-3"></i>
                     <p class="mb-0 fs-5">Soluciones viales eficientes y duraderas</p>
                 </div>
-                <a href="?action=about" class="btn btn-outline-danger btn-lg px-4">
+                <a href="?action=inicio&method=about" class="btn btn-outline-danger btn-lg px-4">
                     Conózcanos más <i class="bi bi-arrow-right ms-2"></i>
                 </a>
             </div>

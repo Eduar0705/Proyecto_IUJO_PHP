@@ -3,7 +3,7 @@
         <div class="auth-container shadow-sm p-4">
             <h2 class="text-center mb-4">Iniciar Sesión</h2>
             
-            <form action="?action=login&method=authenticate" method="POST">
+            <form action="?action=inicio&method=loginAuthenticate" method="POST">
                 <div class="mb-3">
                     <label for="email" class="form-label">Usuario</label>
                     <input type="text" class="form-control" id="user" name="user" required>
@@ -18,7 +18,7 @@
                 <div class="text-center">
                     <a href="?action=forgot-password" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
                     <hr>
-                    <p>¿No tienes una cuenta? <a href="?action=register" class="text-decoration-none">Regístrate aquí</a></p>
+                    <p>¿No tienes una cuenta? <a href="?action=inicio&method=register" class="text-decoration-none">Regístrate aquí</a></p>
                 </div>
             </form>
         </div>

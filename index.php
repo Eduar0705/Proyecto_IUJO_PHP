@@ -1,8 +1,7 @@
 <?php
-// Configuración básica
 require_once 'config/config.php';
 
-// Autoload básico
+// autoload
 spl_autoload_register(function($className) {
     $paths = [
         'controllers/' . $className . '.php',
@@ -17,27 +16,26 @@ spl_autoload_register(function($className) {
     }
 });
 
-// Enrutamiento 
-$action = $_GET['action'] ?? 'home';
-$controllerName = ucfirst($action) . 'Controller';
-$controllerFile = 'controllers/' . $controllerName . '.php';
+//Enrutamiento 
+$action = $_GET['action'] ?? 'Inicio';
+$actionName = ucfirst($action) . 'Controller';
+$method = $_GET['method'] ?? 'home';
+$controllerFile = 'controllers/' . $actionName . '.php';
 
 if (file_exists($controllerFile)) {
     require_once $controllerFile;
     
-    // Verificación de las clases
-    if (!class_exists($controllerName)) {
-        die("Error: La clase $controllerName no está definida en $controllerFile");
+    //verificación de las clases
+    if (!class_exists($actionName)) {
+        die("Error: La clase $actionName no está definida en $controllerFile");
+    }
+    $controller = new $actionName();
+    //verificación del método inicial
+    if (!method_exists($controller, $method)) {
+        die("Error: El método " . $method . "() no existe en $controllerName");
     }
     
-    $controller = new $controllerName();
-    
-    // Verificación del método index 
-    if (!method_exists($controller, 'index')) {
-        die("Error: El método index() no existe en $controllerName");
-    }
-    
-    $controller->index();
+    $controller->$method();
 } else {
     error_log("Controlador no encontrado: $controllerFile");
     require_once 'views/error/404.php';

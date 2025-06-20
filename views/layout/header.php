@@ -17,7 +17,7 @@
             border-bottom: 2px solid #ff4d4d !important;
             transition: all 0.3s ease;">
     <div class="container">
-            <a class="navbar-brand" href="?action=home">
+            <a class="navbar-brand" href="?action=inicio">
                 <img src="assets/img/Logo1.png" alt="Logo" width="180" class="d-inline-block align-top me-2">
     <!--  <span class="fw-bold fs-4 mt-1"><?= APP_NAME ?></span>-->
             </a>
@@ -27,27 +27,27 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto" style="gap: 1.5rem;">
                     <li class="nav-item">
-                        <a class="nav-link active" href="?action=home"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                        <a class="nav-link active" href="?action=inicio"><i class="bi bi-house-door me-1"></i>Inicio</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="?action=projects"> <i class="bi bi-cone-striped me-1"></i>Proyectos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="?action=about"><i class="bi bi-people me-1"></i>Nosotros</a>
+                        <a class="nav-link" href="?action=inicio&method=about"><i class="bi bi-people me-1"></i>Nosotros</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="?action=contact"><i class="bi bi-envelope me-1"></i>Contacto</a>
+                        <a class="nav-link" href="?action=inicio&method=contact"><i class="bi bi-envelope me-1"></i>Contacto</a>
                     </li>
                 </ul>
                 
                 <!-- Sección de Login/Registro (parte superior derecha) -->
                 <div class="d-flex align-items-center">
                     <?php if(!isset($_SESSION['user'])): ?>
-                    <a href="?action=login" class="btn btn-outline-primary me-2">
+                    <a href="?action=inicio&method=login" class="btn btn-outline-primary me-2">
             <i class="bi bi-box-arrow-in-right me-1"></i>Login
         </a>
 
-                <a href="?action=register" class="btn" 
+                <a href="?action=inicio&method=register" class="btn" 
                         style="
                         color: #E31837;
                         border: 1px solid #E31837;

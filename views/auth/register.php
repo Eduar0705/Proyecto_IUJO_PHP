@@ -1,8 +1,11 @@
+<br><br>
 <div class="row justify-content-center">
+    <br>
     <div class="col-md-6 col-lg-5">
+        <br><br><br><br>
         <div class="auth-container shadow-sm p-4">
             <h2 class="text-center mb-4">Registro de Usuario</h2> 
-            <form action="?action=register&method=store" method="post">
+            <form action="?action=register&method=registerStore" method="post">
                 <div class="mb-3">
                     <label for="name" class="form-label">Nombre Completo</label>
                     <input type="text" class="form-control" name="nombre" id="nombre" required>
@@ -29,11 +32,13 @@
                 </div>
                 <div class="d-grid mb-3">
                     <button type="submit" class="btn btn-primary">Registrarse</button>
+                <br>
                 </div
                 <div class="text-center">
-                    <p>¿Ya tienes una cuenta? <a href="?action=login" class="text-decoration-none">Inicia sesión aquí</a></p>
+                    <p>¿Ya tienes una cuenta? <a href="?action=inicio&method=login" class="text-decoration-none">Inicia sesión aquí</a></p>
                 </div>
             </form>
         </div>
     </div>
+    <br>
 </div>

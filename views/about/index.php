@@ -289,6 +289,7 @@
 </section>
 
 <!-- Galería de Presidentes -->
+ <br><br>
 <section class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">

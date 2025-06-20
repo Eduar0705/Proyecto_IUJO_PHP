@@ -36,13 +36,13 @@
                     <div class="card-body text-center p-4">
                         <i class="bi bi-telephone-fill text-danger" style="font-size: 2.5rem;"></i>
                         <h4 class="my-3" style="font-family: 'Georgia', serif;">Teléfonos</h4>
-                        <p class="mb-1"><strong>Oficina Principal:</strong></p>
-                        <p class="mb-0">(0251) 123-4567</p>
-                        <p class="mb-1 mt-3"><strong>Atención al Ciudadano:</strong></p>
-                        <p class="mb-0">(0251) 987-6543</p>
+                        <p class="mb-1"><strong>Telefono de oficina:</strong></p>
+                        <p class="mb-0">(0251) 442-4548</p>
+                        <br>
+                        <p class="mb-0">Para otro tipo de contactos, <br> visitanos en nuestras oficinas.</p>
                     </div>
                     <div class="card-footer bg-white text-center">
-                        <a href="tel:+582511234567" class="btn btn-sm btn-outline-danger">
+                        <a href="tel:+02514424548" class="btn btn-sm btn-outline-danger">
                             <i class="bi bi-telephone-outbound me-2"></i>Llamar ahora
                         </a>
                     </div>
