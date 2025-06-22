@@ -8,7 +8,7 @@
     <li><a href="?action=admin&method=admin"><i class="fas fa-home"></i> Inicio</a></li>
     
     <li class="menu-label">Inventario</li>
-    <li><a href="../Inventario/Index_inventario.php"><i class="fas fa-boxes"></i> Gestión de Inventario</a></li>
+    <li><a href="#"><i class="fas fa-boxes"></i> Gestión de Inventario</a></li>
     <li><a href="..&"><i class="fas fa-truck-loading"></i> Entradas/Salidas</a></li>
     
     <li class="menu-label">Proyectos</li>

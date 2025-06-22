@@ -43,10 +43,8 @@ class InicioController
         $this->db = BaseDatos::conectar();
         if(isset($_POST['init'])){
             if(strlen($_POST['user']) >= 3 && strlen($_POST['password']) >= 3) {
-
                 $usuario = trim($_POST['user']);
                 $password = trim($_POST['password']);
-
                 // Escapar caracteres especiales para prevenir inyección SQL
                 $consulta = "SELECT * FROM informacion WHERE usuario = ? AND clave = ?";
                 $stmt = mysqli_prepare($this->db, $consulta);
@@ -56,7 +54,7 @@ class InicioController
 
                 if($fila = mysqli_fetch_array($result)){
                     $_SESSION['nombre'] = $fila['nombre'];
-                    $_SESSION['id_usuario'] = $fila['id']; 
+                    $_SESSION['id'] = $fila['id'];
 
                     if($fila['id_cargo'] == 1){
                         header("Location: ?action=admin&method=admin");
@@ -67,26 +65,10 @@ class InicioController
                         exit();
                     }
                     else{
-                        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-                            <script>
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error de autenticación',
-                                    text: 'Acceso no autorizado para este usuario',
-                                    confirmButtonColor: '#3085d6'
-                                });
-                            </script>";
+                        echo "<script>alert('ID no encontrado error en el usuario registrado');</script>";
                     }
                 } else {
-                    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-                        <script>
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Usuario no encontrado',
-                                text: 'No existe un usuario con esas credenciales',
-                                confirmButtonColor: '#3085d6'
-                            });
-                        </script>";
+                    echo "<script>alert('Usuario o contraseña incorrectos');</script>";
                 }
                 mysqli_stmt_close($stmt);
             }
@@ -120,38 +102,14 @@ class InicioController
                     $fila = mysqli_fetch_assoc($resultado_verificar);
                     
                     if($fila['usuario'] == $usuario) {
-                        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-                                <script>
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Usuario encontrado',
-                                        text: 'El nombre de usuario ya está registrado',
-                                        confirmButtonColor: '#3085d6'
-                                    });
-                                </script>";
+                        echo "<script>alert('El nombre de usuario ya está registrado');</script>";
                     }
                     
                     if($fila['email'] == $email) {
-                        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-                                <script>
-                                Swal.fire({
-                                icon: 'error',
-                                title: 'Email encontrado',
-                                text: 'El email ya se encuentra registrado',
-                                confirmButtonColor: '#3085d6'
-                                });
-                                </script>";
+                        echo "<script>alert('El correo electrónico ya está registrado');</script>";
                     }
                     if($fila['cedula'] == $cedula){
-                        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-                                <script>
-                                    Swal.fire({
-                                    icon: 'error',
-                                    title: 'Cedula encontrada',
-                                    text: 'La cedula ya se encuentra registrada',
-                                    confirmButtonColor: '#3085d6'
-                                    });
-                                </script>";
+                        echo "<script>alert('La cédula ingresada ya se encuentra en el sistema');</script>";
                     }
                 }
                 //VERIFICACION SI YA SE ENCUENTRAN SOLICITADOS
@@ -164,44 +122,21 @@ class InicioController
                     // SI EL USUARIO, EMAIL O CÉDULA YA FUERON SOLICITADOS
                     $fila = mysqli_fetch_assoc($resultado_verificar);
                     if($fila['usuario'] == $usuario && $fila['email'] == $email && $fila['cedula'] == $cedula) {
-                        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-                                <script>
-                                    Swal.fire({
-                                    icon: 'error',
-                                    title: 'Solicitud encontrada',
-                                    text: 'Ya se una cuenta con estos datos. Inicie sesión o intente más tarde.',
-                                    confirmButtonColor: '#3085d6'
-                                })";
-                    }
+                        echo "<script>alert('Ya se una cuenta con estos datos. Inicie sesión o intente más tarde.');</script>";
+                    }                   
                 } else {
                     $consulta = "INSERT INTO solicitud_registro(nombre, usuario, clave, email, cedula, id_cargo) VALUES ('$names','$usuario','$password','$email', '$cedula','2')";
                     $resultado = mysqli_query($this->db, $consulta); 
 
                     if ($resultado) {
                         echo "<script>alert('Solicitud de registro enviada');</script>";
-                        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-                                <script>
-                                    Swal.fire({
-                                    icon: 'success',
-                                    title: 'Solicitud enviada',
-                                    text: 'Su solicitud de registro ha sido enviada. En breve se le contactarán con usted.',
-                                    confirmButtonColor: '#3085d6'
-                                })";
                         $this->register();
                     } else {
                         echo "<script>alert('Error al registrar el usuario: " . mysqli_error($this->db) . "');</script>";
                     }
                 }
             } else {
-                echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-                <script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Por favor, complete todos los campos correctamente.',
-                    confirmButtonColor: '#3085d6'
-                    });
-                </script>";
+                echo "<script>alert('Por favor, complete todos los campos correctamente');</script>";
             }
         }
     }
@@ -291,6 +226,7 @@ class InicioController
             header("Location: ?action=inicio&method=forgotPassword");
             exit();
         }
+        
         require_once 'views/auth/verify-token.php';
     }
 
