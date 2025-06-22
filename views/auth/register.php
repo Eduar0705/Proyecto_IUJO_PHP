@@ -25,7 +25,7 @@
                                 <h2 class="h5 fw-normal text-muted">REGISTRO DE USUARIO</h2>
                             </div>
                             
-                            <form action="?action=register&method=registerStore" method="post">
+                            <form action="?action=inicio&method=registerStore" method="post">
                                 <div class="mb-3">
                                     <input type="text" class="form-control border-light bg-light py-2" name="nombre" id="nombre" placeholder="Nombre Completo" required>
                                 </div>
@@ -47,7 +47,7 @@
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <input type="password" class="form-control border-light bg-light py-2" name="confirm_password" id="confirm_password" placeholder="Confirmar Contraseña" required>
+                                    <input type="password" class="form-control border-light bg-light py-2" name="password2" id="password2" placeholder="Confirmar Contraseña" required>
                                 </div>
                                 
                                 <div class="d-grid mb-3" style="margin-top: 1rem;">

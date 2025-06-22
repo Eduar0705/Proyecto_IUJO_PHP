@@ -6,7 +6,9 @@
     
     <div class="logo-header">
         <!-- Ruta absoluta desde la raíz -->
-        <img src="assets/img/Logo1.png" alt="INVILARA Logo">
+         <a href="?action=admin">
+            <img src="assets/img/Logo1.png" alt="INVILARA Logo">
+         </a>
         <h1><?= APP_NAME ?> - Administrador</h1>
     </div>
     
@@ -17,7 +19,7 @@
                 <i class="fas fa-user-plus"></i>
                 <span>Registros</span>
             </a>
-            <a href="/" class="btn-user-action btn-logout">
+            <a href="?action=inicio" class="btn-user-action btn-logout">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Salir</span>
             </a>

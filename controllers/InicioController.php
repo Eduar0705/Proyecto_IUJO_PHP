@@ -40,7 +40,6 @@ class InicioController
     }
 
     public function loginAuthenticate() {
-        $this->db = BaseDatos::conectar();
         if(isset($_POST['init'])){
             if(strlen($_POST['user']) >= 3 && strlen($_POST['password']) >= 3) {
                 $usuario = trim($_POST['user']);
@@ -57,11 +56,11 @@ class InicioController
                     $_SESSION['id'] = $fila['id'];
 
                     if($fila['id_cargo'] == 1){
-                        header("Location: ?action=admin&method=admin");
+                        header("Location: ?action=admin");
                         exit();
                     }
                     else if($fila['id_cargo'] == 2){
-                        header("Location: ?action=users&method=users");
+                        header("Location: ?action=users");
                         exit();
                     }
                     else{
@@ -81,8 +80,6 @@ class InicioController
     }
 
     public function registerStore() {
-        $this->db = BaseDatos::conectar();
-        //Le falta considerar todos los campos y la base de datos.
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $names = trim($_POST['nombre']);
             $usuario = trim($_POST['username']);

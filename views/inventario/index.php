@@ -6,16 +6,14 @@
     <title>Inventario</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../templates/inventario2.css">
-    <link rel="shortcut icon" href="../templates/Logo1.png" type="image/x-icon">
+    <link rel="stylesheet" href="assets/css/inventario2.css">
+    <link rel="shortcut icon" href="assets/img/Logo1.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <?php 
-    //include ('../funciones/funcion_registro.php');
     //include ('../funciones/funcion_Index_inve.php');
-    ?>
-    <?php
+    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
@@ -27,10 +25,10 @@
     $es_admin = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 1;
     ?>
     <header class="admin-header">
-        <?php include 'layout/navAdmin.php'; ?>
+        <?php include 'views/layout/header_Admin.php'; ?>
     </header>
     <div class="sidebar-container">
-        <?php include 'layout/menuAdmin.php'; ?>
+        <?php include 'views/layout/menuAdmin.php'; ?>
     </div>
     
     <main class="main-content">
@@ -55,7 +53,6 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    
                     <div class="form-button">
                         <button type="submit" class="btn"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
                     </div>
