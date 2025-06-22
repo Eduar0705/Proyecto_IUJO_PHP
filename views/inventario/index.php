@@ -12,17 +12,11 @@
 </head>
 <body>
     <?php 
-    //include ('../funciones/funcion_Index_inve.php');
     $search = isset($_GET['search']) ? trim($_GET['search']) : '';
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
 
-    $nombre = "Invitado";
-    if (!empty($_SESSION['nombre']) && is_string($_SESSION['nombre'])) {
-        $nombre = htmlspecialchars(trim($_SESSION['nombre']), ENT_QUOTES, 'UTF-8');
-    }
-    $es_admin = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 1;
     ?>
     <header class="admin-header">
         <?php include 'views/layout/header_Admin.php'; ?>

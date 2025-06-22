@@ -1,4 +1,4 @@
-<?php //Reemplazar por el Controlador del MVC de Eduar
+<?php
 class AdminController {
     public function home() {
         $title = "Administracion";

@@ -54,6 +54,7 @@ class InicioController
                 if($fila = mysqli_fetch_array($result)){
                     $_SESSION['nombre'] = $fila['nombre'];
                     $_SESSION['id'] = $fila['id'];
+                    $_SESSION['id_cargo'] = $fila['id_cargo'];
 
                     if($fila['id_cargo'] == 1){
                         header("Location: ?action=admin");

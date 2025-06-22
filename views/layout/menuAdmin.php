@@ -1,5 +1,5 @@
 <div class="sidebar-logo">
-    <img src="../templates/Logo1.png" alt="INVILARA Logo">
+    <img src="assets/img/Logo1.png" alt="INVILARA Logo">
     <h2>INVILARA</h2>
 </div>
 
