@@ -58,7 +58,7 @@
 
         <!-- Botones de acción -->
         <div class="action-buttons">
-            <a href="crear.php" class="btn btn-primary">
+            <a href="?action=inventario&method=crear" class="btn btn-primary">
                 <i class="fa-solid fa-plus"></i> Nuevo Producto
             </a>
             

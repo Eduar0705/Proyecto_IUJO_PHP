@@ -1,7 +1,8 @@
 <?php
-require 'model/conexion.php';
+require 'model/Conexion.php';
 require 'model/Inventariado.php';
 class InventarioController {
+    private $modeloDB;
     private $db; 
     public $productos;
     public $categorias;
@@ -9,25 +10,12 @@ class InventarioController {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        $this->db = BaseDatos::conectar();
-    }
-    public function verificarUsuario()
-    {
-        $nombre = "Invitado";
-        if (!empty($_SESSION['nombre']) && is_string($_SESSION['nombre'])) {
-            $nombre = htmlspecialchars(trim($_SESSION['nombre']), ENT_QUOTES, 'UTF-8');
-    }
-    $es_admin = $_SESSION['id_cargo'];
-    if ($es_admin!==1)
-    {
-        echo '<br> wut';
-        header('Location: ?action=inicio');
-        exit();
-    }
+        $this->modeloDB = new BaseDatos();
+        $this->db = $this->modeloDB->conectar();
     }
     public function refrescarDatos()
     {
-        $this->verificarUsuario();
+        $this->modeloDB->verificarUsuario();
         $datos = Inventariado::refrescarDatos($this->db);
         $this->productos = $datos['productos'];
         $this->categorias = $datos['categorias'];

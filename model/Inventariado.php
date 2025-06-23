@@ -1,8 +1,6 @@
 <?php
-
 class Inventariado
 {
-
     public static function refrescarDatos($conex)
     {
     if (isset($_SESSION['nombre'])) {
@@ -14,7 +12,7 @@ class Inventariado
         if (!$conex) {
             die("Error de conexión: " . mysqli_connect_error());
         }
-
+        
         $search = $_GET['search'] ?? '';
         $categoria_id = $_GET['categoria_id'] ?? '';
 
@@ -61,8 +59,30 @@ class Inventariado
         $categorias = $conex->query("SELECT * FROM categorias")->fetch_all(MYSQLI_ASSOC);
 
         return ['productos' => $productos, 'categorias' => $categorias];
+    }
+    /*public function crear()
+    {
+        session_start();
+        $categorias = $conex->query("SELECT * FROM categorias")->fetch_all(MYSQLI_ASSOC);
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $nombre = $conex->real_escape_string($_POST['nombre']);
+            $descripcion = $conex->real_escape_string($_POST['descripcion']);
+            $cantegoria_id = intval($_POST['cantegoria_id']);
+            $unidad_medida = $conex->real_escape_string($_POST['unidad_medida']);
+            $stock = intval($_POST['stock']);
+
+            $sql = "INSERT INTO productos (nombre, descripcion, cantegoria_id, unidad_medida, stock) 
+                    VALUES ('$nombre', '$descripcion', $cantegoria_id, '$unidad_medida', $stock)";
+
+            if ($conex->query($sql)) {
+                header("Location: Index_inventario.php?success=1");
+                exit;
+            } else {
+                $error = "Error al crear producto: " . $conex->error;
             }
-            
         }
+    }        */    
+}
 ?>
 ?>
