@@ -32,6 +32,8 @@
         <!-- Barra de búsqueda y filtros -->
         <div class="form-search-container">
             <form method="GET" class="search-form">
+                <input type="hidden" name="action" value="inventario">
+                <input type="hidden" name="method" value="inventario">    
                 <div class="form-row">
                     <div class="form-field">
                         <input type="text" name="search" class="form-control" placeholder="Buscar productos..." value="<?= htmlspecialchars($search) ?>">
@@ -41,7 +43,7 @@
                         <select name="categoria_id" class="form-select">
                             <option value="">Todas las categorías</option>
                             <?php foreach ($categorias as $categoria): ?>
-                                <option value="<?= $categoria['id'] ?>" <?= $categoria_id == $categoria['id'] ? 'selected' : '' ?>>
+                                <option value="<?= $categoria['id'] ?>" <?= $categoria_id = $categoria['id'] ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($categoria['nombre']) ?>
                                 </option>
                             <?php endforeach; ?>

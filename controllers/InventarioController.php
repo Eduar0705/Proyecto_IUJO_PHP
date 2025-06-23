@@ -24,7 +24,6 @@ class InventarioController {
         header('Location: ?action=inicio');
         exit();
     }
-    return $nombre;
     }
     public function refrescarDatos()
     {
@@ -34,13 +33,12 @@ class InventarioController {
         $this->categorias = $datos['categorias'];
     }
     public function inventario() {
-        $nombre = $this->verificarUsuario();
+        $nombre = $_SESSION['nombre'];
         $title = "Inventario";
         $this->refrescarDatos();
         $productos = $this->productos;
         $categorias = $this->categorias;
         require_once 'views/inventario/index.php';
-
     }   
 }
 ?>
