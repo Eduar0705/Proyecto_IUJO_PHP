@@ -34,7 +34,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <form method="POST" class="centered-form">
         <input type="hidden" name="action" value="admin">  
-        <input type="hidden" name="method" value="crear">  
+        <input type="hidden" name="method" value="crear">
             <div class="form-group">
                 <label>Nombre</label>
                 <input type="text" name="nombre" class="form-control" required>

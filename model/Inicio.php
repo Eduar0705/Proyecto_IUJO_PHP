@@ -44,7 +44,7 @@ class Inicio{
             }
     }
     
-    public function registerStore($names, $usuario, $cedula, $email, $password)
+    public function registerStore($names, $usuario, $cedula, $email, $password, $base_datos)
 {
                 //VERIFICACION SI YA SE ENCUENTRAN EN LA BASE DE DATOS
                 $stmt = $this->db->prepare("SELECT * FROM informacion WHERE usuario = ? OR email = ? OR cedula = ?");
@@ -68,7 +68,7 @@ class Inicio{
                     }
                 }
                 //VERIFICACION SI YA SE ENCUENTRAN SOLICITADOS
-                $stmt = $this->db->prepare("SELECT * FROM solicitud_registro WHERE usuario = ? OR email = ? OR cedula = ?");
+                $stmt = $this->db->prepare("SELECT * FROM " . $base_datos . " WHERE usuario = ? OR email = ? OR cedula = ?");
                 $stmt->bind_param("sss", $usuario, $email, $cedula);
                 $stmt->execute();
                 $resultado_verificar = $stmt->get_result();
@@ -80,11 +80,18 @@ class Inicio{
                         echo "<script>alert('Ya existe una cuenta con estos datos. Inicie sesión o intente más tarde.');</script>";
                     }                   
                 } else {
-                    $consulta = "INSERT INTO solicitud_registro(nombre, usuario, clave, email, cedula, id_cargo) VALUES ('$names','$usuario','$password','$email', '$cedula','2')";
+                    $consulta = "INSERT INTO " . $base_datos . "(nombre, usuario, clave, email, cedula, id_cargo) VALUES ('$names','$usuario','$password','$email', '$cedula','2')";
                     $resultado = mysqli_query($this->db, $consulta); 
 
                     if ($resultado) {
-                        echo "<script>alert('Solicitud de registro enviada');</script>";
+                        if($base_datos == 'solicitud_registro')
+                        {
+                            echo "<script>alert('Solicitud de registro enviada');</script>";
+                        }
+                        else if($base_datos == 'informacion')
+                        {
+                            echo "<script>alert('Nuevo usuario registrado!');</script>";
+                        }
                         
                     } else {
                         echo "<script>alert('Intente de nuevo. Hubo un error al registrar el usuario: " . mysqli_error($this->db) . "');</script>";

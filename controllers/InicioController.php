@@ -3,10 +3,10 @@ require_once __DIR__ . '/../model/Conexion.php';
 require_once __DIR__ . '/../model/Inicio.php';
 class InicioController
 {
-    public $controlador;
+    public $modelo;
     public function __construct()
     {
-        $this->controlador = new Inicio();
+        $this->modelo = new Inicio();
     }
     public function about() {
         $title = "Sobre Nosotros";
@@ -36,7 +36,7 @@ class InicioController
             if(strlen($_POST['user']) >= 3 && strlen($_POST['password']) >= 3) {
                 $usuario = trim($_POST['user']);
                 $password = trim($_POST['password']);
-                $this->controlador->loginAuthenticate($usuario, $password);
+                $this->modelo->loginAuthenticate($usuario, $password);
             }
         }
     }
@@ -47,13 +47,14 @@ class InicioController
     }
     public function registerStore() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $base_datos = 'solicitud_registro';
             $names = trim($_POST['nombre']);
             $usuario = trim($_POST['username']);
             $cedula = trim($_POST['CI']);
             $email = trim($_POST['email']);
             if(($_POST['password']) == ($_POST['password2'])) {
                 $password = ($_POST['password']);
-                $this->controlador->registerStore($names, $usuario, $cedula, $email, $password);
+                $this->modelo->registerStore($names, $usuario, $cedula, $email, $password, $base_datos);
             }
             else {
                 echo "<script>alert('Por favor, coloque la misma contraseña en ambos campos.');</script>";
@@ -74,7 +75,7 @@ class InicioController
                 header("Location: ?action=inicio&method=forgotPassword&alert=danger&message=Email inválido");
                 exit();
             }
-            $this->controlador->sendResetLink($email);
+            $this->modelo->sendResetLink($email);
             // Mensaje genérico
             header("Location: ?action=inicio&method=forgotPassword&alert=success&message=Si el email existe, recibirás un código");
             exit();
@@ -102,7 +103,7 @@ class InicioController
                 header("Location: ?action=inicio&method=resetPassword");
                 exit();
             }
-            $this->controlador->checkToken($email, $token);
+            $this->modelo->checkToken($email, $token);
         }
     }
 
@@ -126,7 +127,7 @@ class InicioController
                 header("Location: ?action=inicio&method=resetPassword&alert=danger&message=Las contraseñas no coinciden");
                 exit();
             }
-            $this->controlador->updatePassword($email, $password);
+            $this->modelo->updatePassword($email, $password);
         }
         
         header("Location: ?action=inicio&method=resetPassword");

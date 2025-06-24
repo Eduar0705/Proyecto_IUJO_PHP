@@ -1,8 +1,10 @@
 <?php
 require 'model/Conexion.php';
 require 'model/Inventariado.php';
+require 'model/Inicio.php';
 class AdminController {
     private $modelo;
+    private $modelo_inicio;
     private $modeloDB;
     public $productos;
     public $categorias;
@@ -18,6 +20,39 @@ class AdminController {
         $this->modeloDB->verificarUsuario();
         $title = "Administracion";
         require_once 'views/home/admin.php';
+    }
+    public function registroDeUsuarios()
+    {
+        $title = "Registro de Usuarios";
+        $nombre = $_SESSION['nombre'];
+        require_once 'views/usuarios/registro.php';
+        if(isset($_POST['action']) && isset($_POST['method']))
+        {
+            if($_POST['method']=='registrarUsuario')
+            {
+                $this->registrarUsuario();
+            }
+            
+        }
+    }
+    public function registrarUsuario()
+    {
+        $base_datos = 'informacion';
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $base_datos = 'informacion';
+            $names = trim($_POST['nombre']);
+            $usuario = trim($_POST['username']);
+            $cedula = trim($_POST['CI']);
+            $email = trim($_POST['email']);
+            if(($_POST['password']) == ($_POST['password2'])) {
+                $password = ($_POST['password']);
+                $this->modelo_inicio = new Inicio();
+                $this->modelo_inicio->registerStore($names, $usuario, $cedula, $email, $password, $base_datos);
+            }
+            else {
+                echo "<script>alert('Por favor, coloque la misma contraseña en ambos campos.');</script>";
+            }
+        }
     }
     //Inventario
     public function inventario() {

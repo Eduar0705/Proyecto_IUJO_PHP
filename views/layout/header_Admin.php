@@ -15,7 +15,7 @@
     <div class="user-nav">
         <span class="welcome-msg"><?php echo "Bienvenido " . htmlspecialchars($nombre); ?></span>
         <div class="user-actions">
-            <a href="?action=admin&method=registrarUsuarios" class="btn-user-action">
+            <a href="?action=admin&method=registroDeUsuarios" class="btn-user-action">
                 <i class="fas fa-user-plus"></i>
                 <span>Registros</span>
             </a>
