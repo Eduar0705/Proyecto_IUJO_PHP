@@ -32,7 +32,7 @@
         <!-- Barra de búsqueda y filtros -->
         <div class="form-search-container">
             <form method="GET" class="search-form">
-                <input type="hidden" name="action" value="inventario">
+                <input type="hidden" name="action" value="admin">
                 <input type="hidden" name="method" value="inventario">    
                 <div class="form-row">
                     <div class="form-field">
@@ -43,7 +43,7 @@
                         <select name="categoria_id" class="form-select">
                             <option value="">Todas las categorías</option>
                             <?php foreach ($categorias as $categoria): ?>
-                                <option value="<?= $categoria['id'] ?>" <?= $categoria_id = $categoria['id'] ? 'selected' : '' ?>>
+                                <option value="<?= $categoria['id'] ?>" <?= $categoria_id == $categoria['id'] ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($categoria['nombre']) ?>
                                 </option>
                             <?php endforeach; ?>
@@ -58,15 +58,15 @@
 
         <!-- Botones de acción -->
         <div class="action-buttons">
-            <a href="?action=inventario&method=crear" class="btn btn-primary">
+            <a href="?action=admin&method=crear" class="btn btn-primary">
                 <i class="fa-solid fa-plus"></i> Nuevo Producto
             </a>
             
             <div class="export-buttons">
-                <a href="reportes.php?type=excel&search=<?= urlencode($search) ?>&categoria_id=<?= $categoria_id ?>" class="btn-excel">
+                <a href="?action=admin&method=reporte&type=excel&search=<?= urlencode($search) ?>&categoria_id=<?= $categoria_id ?>" class="btn-excel">
                     <i class="fa-solid fa-file-excel"></i> Exportar a Excel
                 </a>
-                <a href="exportar.php?type=pdf&search=<?= urlencode($search) ?>&categoria_id=<?= $categoria_id ?>" class="btn-pdf">
+                <a href="?action=admin&method=reporte&type=pdf&search=<?= urlencode($search) ?>&categoria_id=<?= $categoria_id ?>" class="btn-pdf">
                     <i class="fa-solid fa-file-pdf"></i> Exportar a PDF
                 </a>
             </div>
@@ -103,10 +103,10 @@
                                 <td><?= $producto['stock'] ?></td>
                                 <td><?= date('d/m/Y', strtotime($producto['fecha_registro'])) ?></td>
                                 <td class="table-actions">
-                                    <a href="actualizar_inventario.php?id=<?= $producto['id'] ?>" class="action-link edit-action">
+                                    <a href="?action=admin&method=actualizar&id=<?= $producto['id'] ?>" class="action-link edit-action">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-                                    <a href="eliminar_invitario.php?id=<?=$producto['id']?>" class="action-link delete-action" onclick="confirmarEliminacion(event, this.href)">
+                                    <a href="?action=admin&method=eliminar&id=<?=$producto['id']?>" class="action-link delete-action" onclick="confirmarEliminacion(event, this.href)">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </td>

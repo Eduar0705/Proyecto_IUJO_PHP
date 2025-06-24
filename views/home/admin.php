@@ -42,7 +42,7 @@ $es_admin = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 1;
             <h2 class="quick-access-title">Accesos Rápidos</h2>
             <div class="quick-access-grid">
                 <!-- Fila 1 -->
-                <a href="?action=inventario&method=inventario" class="quick-access-item">
+                <a href="?action=admin&method=inventario" class="quick-access-item">
                     <i class="fas fa-warehouse"></i>
                     <h3>Inventario</h3>
                 </a>

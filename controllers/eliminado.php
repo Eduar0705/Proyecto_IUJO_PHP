@@ -14,7 +14,7 @@ class InventarioController {
     public function refrescarDatos()
     {
         $this->modelo->getModeloDB()->verificarUsuario();
-        $datos = Inventariado::refrescarDatos($this->modelo->getDB());
+        $datos = $this->modelo->refrescarDatos();
         $this->productos = $datos['productos'];
         $this->categorias = $datos['categorias'];
     }
@@ -33,10 +33,7 @@ class InventarioController {
         $categorias = $this->categorias;
         $title = "Agregar Producto";
         require_once('views/inventario/crear.php');
-    }   
-    public function subirCreado()
-    {
         $this->modelo->crear();
-    }
+    }   
 }
 ?>

@@ -32,9 +32,9 @@ if (session_status() === PHP_SESSION_NONE) {
             <div class="alert alert-danger"><?= $error ?></div>
         <?php endif; ?>
 
-        <form method="POST" action=crear.php class="centered-form">
-        <input type="hidden" name="action" value="inventario">  
-        <input type="hidden" name="method" value="subirCreado">  
+        <form method="POST" class="centered-form">
+        <input type="hidden" name="action" value="admin">  
+        <input type="hidden" name="method" value="crear">  
             <div class="form-group">
                 <label>Nombre</label>
                 <input type="text" name="nombre" class="form-control" required>
@@ -73,7 +73,7 @@ if (session_status() === PHP_SESSION_NONE) {
             
             <div class="form-actions">
                 <button type="submit" class="btn btn-save"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
-                <a href="?action=inventario&method=inventario" class="btn btn-cancel"><i class="fa-solid fa-xmark"></i> Cancelar</a>
+                <a href="?action=admin&method=inventario" class="btn btn-cancel"><i class="fa-solid fa-xmark"></i> Cancelar</a>
             </div>
         </form>
     </div>
