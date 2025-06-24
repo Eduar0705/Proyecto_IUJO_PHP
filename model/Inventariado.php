@@ -1,6 +1,21 @@
 <?php
 class Inventariado
 {
+    private $db;
+    private $modeloDB;
+    public function __construct()
+    {
+        $this->modeloDB = new BaseDatos();
+        $this->db = $this->modeloDB->conectar();
+    }
+    public function getModeloDB()
+    {
+        return $this->modeloDB;
+    }
+    public function getDB()
+    {
+        return $this->db;
+    }
     public static function refrescarDatos($conex)
     {
     if (isset($_SESSION['nombre'])) {
@@ -60,29 +75,29 @@ class Inventariado
 
         return ['productos' => $productos, 'categorias' => $categorias];
     }
-    /*public function crear()
+    public function crear()
     {
         session_start();
-        $categorias = $conex->query("SELECT * FROM categorias")->fetch_all(MYSQLI_ASSOC);
+        $categorias = $this->db->query("SELECT * FROM categorias")->fetch_all(MYSQLI_ASSOC);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nombre = $conex->real_escape_string($_POST['nombre']);
-            $descripcion = $conex->real_escape_string($_POST['descripcion']);
+            $nombre = $this->db->real_escape_string($_POST['nombre']);
+            $descripcion = $this->db->real_escape_string($_POST['descripcion']);
             $cantegoria_id = intval($_POST['cantegoria_id']);
-            $unidad_medida = $conex->real_escape_string($_POST['unidad_medida']);
+            $unidad_medida = $this->db->real_escape_string($_POST['unidad_medida']);
             $stock = intval($_POST['stock']);
 
             $sql = "INSERT INTO productos (nombre, descripcion, cantegoria_id, unidad_medida, stock) 
                     VALUES ('$nombre', '$descripcion', $cantegoria_id, '$unidad_medida', $stock)";
 
-            if ($conex->query($sql)) {
-                header("Location: Index_inventario.php?success=1");
+            if ($this->db->query($sql)) {
+                header("Location: ?action=inventario&method=inventario");
                 exit;
             } else {
-                $error = "Error al crear producto: " . $conex->error;
+                $error = "Error al crear producto: " . $this->db->error;
             }
         }
-    }        */    
+    }         
 }
 ?>
 ?>

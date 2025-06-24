@@ -4,17 +4,25 @@
     <meta charset="UTF-8">
     <title>Nuevo Producto</title>
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-     <link rel="stylesheet" href="../templates/inventario.css">
-    <link rel="shortcut icon" href="../templates/Logo1.png" type="image/x-icon">
+     <link rel="stylesheet" href="assets/css/inventario2.css">
+    <link rel="shortcut icon" href="assets/img/Logo1.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+    $nombre = $_SESSION['nombre'];
+}
+?>
 <body>
      <header class="admin-header">
-        <?php include __DIR__ . '/../php/inc/nav_admin.php'; ?>
+        <?php 
+        $nombre = $_SESSION['nombre'];
+        include 'views/layout/header_Admin.php'; ?>
     </header>
     
     <div class="sidebar-container">
-       <?php include __DIR__.'/../php/inc/menu_admin.php'; ?>
+       <?php include 'views/layout/menuAdmin.php'; ?>
     </div>
     <main class="main-content">
     <div class="form-centered-container">
@@ -24,7 +32,9 @@
             <div class="alert alert-danger"><?= $error ?></div>
         <?php endif; ?>
 
-        <form method="POST" class="centered-form">
+        <form method="POST" action=crear.php class="centered-form">
+        <input type="hidden" name="action" value="inventario">  
+        <input type="hidden" name="method" value="subirCreado">  
             <div class="form-group">
                 <label>Nombre</label>
                 <input type="text" name="nombre" class="form-control" required>
@@ -40,7 +50,7 @@
                 <select name="cantegoria_id" class="form-select" required>
                     <option value="">Seleccione categoría...</option>
                     <?php 
-                    $categorias = $conex->query("SELECT * FROM categorias WHERE activo = 1");
+                    $categorias = ($this->modelo->getDB())->query("SELECT * FROM categorias WHERE activo = 1");
                     while($cat = $categorias->fetch_assoc()): 
                     ?>
                     <option value="<?= $cat['id'] ?>" 
@@ -63,12 +73,12 @@
             
             <div class="form-actions">
                 <button type="submit" class="btn btn-save"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
-                <a href="Index_inventario.php" class="btn btn-cancel"><i class="fa-solid fa-xmark"></i> Cancelar</a>
+                <a href="?action=inventario&method=inventario" class="btn btn-cancel"><i class="fa-solid fa-xmark"></i> Cancelar</a>
             </div>
         </form>
     </div>
 </main>
          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-         <script src="../php/inc/menu.js"></script>
+         <script src="assets/js/menu.js"></script>
 </body>
 </html>

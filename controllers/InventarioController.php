@@ -2,21 +2,19 @@
 require 'model/Conexion.php';
 require 'model/Inventariado.php';
 class InventarioController {
-    private $modeloDB;
-    private $db; 
+    private $modelo;
     public $productos;
     public $categorias;
         public function __construct() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        $this->modeloDB = new BaseDatos();
-        $this->db = $this->modeloDB->conectar();
+        $this->modelo = new Inventariado();
     }
     public function refrescarDatos()
     {
-        $this->modeloDB->verificarUsuario();
-        $datos = Inventariado::refrescarDatos($this->db);
+        $this->modelo->getModeloDB()->verificarUsuario();
+        $datos = Inventariado::refrescarDatos($this->modelo->getDB());
         $this->productos = $datos['productos'];
         $this->categorias = $datos['categorias'];
     }
@@ -27,6 +25,18 @@ class InventarioController {
         $productos = $this->productos;
         $categorias = $this->categorias;
         require_once 'views/inventario/index.php';
+    }
+    public function crear()
+    {
+        $this->refrescarDatos();
+        $productos = $this->productos;
+        $categorias = $this->categorias;
+        $title = "Agregar Producto";
+        require_once('views/inventario/crear.php');
     }   
+    public function subirCreado()
+    {
+        $this->modelo->crear();
+    }
 }
 ?>

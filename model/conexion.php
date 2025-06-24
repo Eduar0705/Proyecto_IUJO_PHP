@@ -1,6 +1,15 @@
 <?php
 session_start();
 class BaseDatos {
+    private $db;
+    public function __construct()
+    {
+        $this->db = $this->conectar();
+    }
+    public function getDB()
+    {
+        return $this->db;
+    }
     public static function chequearSesion()
     {
         if (session_status() === PHP_SESSION_NONE) {
