@@ -27,7 +27,7 @@ $es_admin = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 1;
         <?php include 'views/layout/menuAdmin.php'; ?>
     </div>
     
-     <main class="main-content">
+    <main class="main-content">
             <div class="welcome-image-container">
                 <img src="./assets/img/Sunset.png" alt="Bienvenida" class="welcome-image">
                 <div class="welcome-text">

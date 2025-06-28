@@ -6,9 +6,9 @@
     
     <div class="logo-header">
         <!-- Ruta absoluta desde la raíz -->
-         <a href="?action=admin">
+        <a href="?action=admin">
             <img src="assets/img/Logo1.png" alt="INVILARA Logo">
-         </a>
+        </a>
         <h1><?= APP_NAME ?> - Administrador</h1>
     </div>
     

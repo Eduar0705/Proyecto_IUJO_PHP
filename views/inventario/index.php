@@ -12,11 +12,10 @@
 </head>
 <body>
     <?php 
-    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
     ?>
     <header class="admin-header">
         <?php include 'views/layout/header_Admin.php'; ?>
@@ -66,7 +65,7 @@
                 <a href="?action=admin&method=reporte&type=excel&search=<?= urlencode($search) ?>&categoria_id=<?= $categoria_id ?>" class="btn-excel">
                     <i class="fa-solid fa-file-excel"></i> Exportar a Excel
                 </a>
-                <a href="?action=admin&method=reporte&type=pdf&search=<?= urlencode($search) ?>&categoria_id=<?= $categoria_id ?>" class="btn-pdf">
+                <a class="btn-pdf" onclick="exportToPDF()">
                     <i class="fa-solid fa-file-pdf"></i> Exportar a PDF
                 </a>
             </div>
@@ -118,12 +117,13 @@
         </div>
     </div>
     </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/menu.js"></script>
     <script>
-        // Función para confirmar eliminación
         function confirmarEliminacion(event, url) {
-            event.preventDefault(); // Evita que el enlace se ejecute directamente
+            event.preventDefault(); 
             
             Swal.fire({
                 title: '¿Estás seguro?',
@@ -136,10 +136,48 @@
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = url; // Redirige a eliminar_invitario.php
+                    window.location.href = url;
                 }
             });
         }
+        async function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l', 'mm', 'a4');
+            const tableContainer = document.querySelector('.table-container');
+            const tableClone = tableContainer.cloneNode(true);
+            
+            tableClone.querySelectorAll('tr > *:last-child').forEach(col => col.remove());
+            
+            tableClone.style.position = 'fixed';
+            tableClone.style.left = '0';
+            tableClone.style.top = '-9999px'; 
+            document.body.appendChild(tableClone);
+            
+            const canvas = await html2canvas(tableClone, {
+                scale: 1, 
+                logging: true,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: tableClone.scrollWidth,
+                windowHeight: tableClone.scrollHeight
+            });
+
+            document.body.removeChild(tableClone);
+            
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const imgWidth = pageWidth - 20;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            
+            const logoUrl = 'assets/img/Logo1.png';
+            const logoWidth = 60; // Aumenté el ancho
+            const logoHeight = 30; // Aumenté el alto
+            const logoX = (doc.internal.pageSize.getWidth() - logoWidth) / 2;
+            const logoY = 10;
+            doc.addImage(logoUrl, 'PNG', logoX, logoY, logoWidth, logoHeight);
+            doc.addImage(canvas, 'PNG', 10, 30, imgWidth, imgHeight);
+            doc.save('inventario.pdf');
+        }
+
     </script>
 </body>
 </html>

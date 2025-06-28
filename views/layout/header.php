@@ -11,7 +11,7 @@
 <body class="<?= isset($hideCarousel) && $hideCarousel ? 'hide-carousel' : '' ?>">
     <!-- Barra de navegación elegante -->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top" 
-     style="background-color: rgba(255, 255, 255, 0.5); 
+    style="background-color: rgba(255, 255, 255, 0.5); 
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(10px);
             border-bottom: 2px solid #ff4d4d !important;
