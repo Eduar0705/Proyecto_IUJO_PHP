@@ -26,7 +26,6 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title">Lista de Usuarios</h5>
-                        <a href="?action=admin&method=solicitudesUsuario">Solicitudes de Registro</a>
                         <input type="text" class="form-control w-25" placeholder="Buscar por nombre o usuario" id="searchInput">
                     </div>
                     <div class="table-resposive">

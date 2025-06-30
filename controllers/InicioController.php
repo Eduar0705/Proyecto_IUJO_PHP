@@ -28,7 +28,6 @@ class InicioController
     }
     public function login() {
         $title = "Iniciar Sesión";
-        $hideCarousel = true; //Esto no esta haciendo nada??
         require_once 'views/auth/login.php';
     }
     public function loginAuthenticate() {
@@ -81,7 +80,6 @@ class InicioController
             exit();
         }
     }
-
     public function verifyToken() {
         $title = "Verificar Código";
         

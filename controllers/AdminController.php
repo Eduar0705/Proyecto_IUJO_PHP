@@ -78,7 +78,7 @@ class AdminController
     {
         $this->validarSesion();
         $title = "Solicitudes de Cuenta";
-         $this->validarSesion();
+        $this->validarSesion();
         
         $nombre = $_SESSION['nombre'];
         $res = $this->config->buscarSolicitud();
@@ -95,25 +95,173 @@ class AdminController
             $this->modeloDB = new BaseDatos();
         }
         $id = $_GET['id'];
-        $sql = "SELECT * FROM solicitud_registro WHERE id = {$id}";
         $conex = $this->modeloDB->conectar();
+        
+        $sql = "SELECT * FROM solicitud_registro WHERE id = {$id}";
         $resultado = $conex->query($sql);
         $found_user = mysqli_fetch_assoc($resultado);
-        $nombre = $found_user['nombre'];
-        $usuario = $found_user['usuario'];
-        $clave = $found_user['clave'];
-        $email = $found_user['email'];
-        $cedula = $found_user['cedula'];
-        if($this->insertarNuevoUsuario('informacion', $nombre, $usuario, $clave, $email, $cedula, $conex))
-        {
-            header("Location:?action=admin&method=configuracion");
-            exit;
+        
+        if($found_user) {
+            $nombre = $found_user['nombre'];
+            $usuario = $found_user['usuario'];
+            $clave = $found_user['clave'];
+            $email = $found_user['email'];
+            $cedula = $found_user['cedula'];
+            
+            if($this->insertarNuevoUsuario('informacion', $nombre, $usuario, $clave, $email, $cedula, $conex))
+            {
+                // Elimina la solicitud cuando se agg correctamente
+                $sql_delete = "DELETE FROM solicitud_registro WHERE id = {$id}";
+                $conex->query($sql_delete);
+                
+                // Mostrar mensaje y redirigir después de 5 segundos
+                echo '<script>
+                        setTimeout(function() {
+                            window.location.href = "?action=admin&method=configuracion";
+                        }, 2000);
+                    </script>';
+                $this->cargandoVisual(5);
+                exit;
+            }
         }
-        else
-        {
-            header("Location:?action=admin&method=solicitudesUsuario");
+        
+        // Si algo falló, redirige 
+        header("Location:?action=admin&method=solicitudesUsuario");
+        exit;
+    }
+    //Pagina de cargado chill jejeje
+    public function cargandoVisual($duracion = 5) {
+        // Configuración inicial para streaming
+        header('Content-Type: text/html; charset=utf-8');
+        ob_implicit_flush(true);
+        ob_end_flush();
+        
+        // HTML inicial con estilos CSS
+        echo '<!DOCTYPE html>
+        <html>
+        <head>
+            <title>Cargando...</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background: #f5f5f5;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                }
+                .loader-container {
+                    text-align: center;
+                    background: white;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                }
+                .loader {
+                    display: inline-block;
+                    width: 50px;
+                    height: 50px;
+                    border: 5px solid #f3f3f3;
+                    border-top: 5px solid #3498db;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin-bottom: 20px;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                .progress-bar {
+                    width: 100%;
+                    height: 10px;
+                    background: #e0e0e0;
+                    border-radius: 5px;
+                    margin-top: 20px;
+                    overflow: hidden;
+                }
+                .progress {
+                    height: 100%;
+                    background: #3498db;
+                    width: 0%;
+                    transition: width 0.3s;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="loader-container">
+                <div class="loader"></div>
+                <h2>Procesando, por favor espere...</h2>
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <p id="percentage">0%</p>
+            </div>
+        </body>
+        </html>';
+
+        // JavaScript para actualizar la barra de progreso
+        echo '<script>
+            var progress = 0;
+            var interval = setInterval(function() {
+                progress += ' . (100/$duracion) . ';
+                document.getElementById("progress").style.width = progress + "%";
+                document.getElementById("percentage").innerHTML = Math.min(progress, 100) + "%";
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(function() {
+                        document.querySelector(".loader-container").innerHTML = \'<h2 style="color:#27ae60;">¡Proceso completado!</h2>\';
+                    }, 500);
+                }
+            }, 1000);
+        </script>';
+        
+        // Tiempo de procesamiento en PHP (simulado)
+        sleep($duracion);
+    }
+
+    public function eliminarSolicitud($id = null) {
+        // Si no recibe el parámetro directamente, lo obtenemos de $_GET
+        if ($id === null) {
+            $id = $_GET['id'] ?? null;
         }
 
+        // Validamos que el ID exista y sea numérico
+        if (!$id || !is_numeric($id)) {
+            $_SESSION['mensaje'] = "ID inválido o no proporcionado";
+            $_SESSION['tipo_mensaje'] = "danger";
+            header("Location: ?action=admin&method=solicitudesUsuario");
+            exit;
+        }
+
+        try {
+            if(!isset($this->modeloDB)){
+                $this->modeloDB = new BaseDatos();
+            }
+            
+            $sql = "DELETE FROM solicitud_registro WHERE id = ?";
+            $conex = $this->modeloDB->conectar();
+            $stmt = $conex->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            
+            if($stmt->affected_rows > 0) {
+                $_SESSION['mensaje'] = "Solicitud eliminada correctamente";
+                $_SESSION['tipo_mensaje'] = "success";
+            } else {
+                $_SESSION['mensaje'] = "No se encontró la solicitud con ID $id";
+                $_SESSION['tipo_mensaje'] = "warning";
+            }
+            
+            $stmt->close();
+        } catch (Exception $e) {
+            $_SESSION['mensaje'] = "Error al eliminar la solicitud: " . $e->getMessage();
+            $_SESSION['tipo_mensaje'] = "danger";
+        }
+        
+        header("Location: ?action=admin&method=solicitudesUsuario");
+        exit;
     }
     public function insertarNuevoUsuario($tabla, $nombre, $usuario, $password, $email, $cedula, $db)
     {
@@ -135,7 +283,7 @@ class AdminController
             $stmt->close();
             return true;
         } else {
-            $error = mysqli_error($this->db);
+            $error = "Error al registrar usuario: " . mysqli_error($db);
             $this->mostrarError("Error al registrar usuario: {$error}");
             $stmt->close();
             return false;
@@ -429,9 +577,6 @@ class AdminController
         $nombre = $_SESSION['nombre'];
         $title = "Solicitudes";
         
-        // Aquí podrías cargar las solicitudes desde el modelo
-        // $solicitudes = $this->modelo->obtenerSolicitudes();
-        
         require_once 'views/solicitudes/index.php';
     }
 
@@ -441,7 +586,7 @@ class AdminController
     * Muestra la configuración del administrador
     */
     public function configuracion(){
-         $this->validarSesion();
+        $this->validarSesion();
         
         $nombre = $_SESSION['nombre'];
         $title = "Configuración";
@@ -599,7 +744,7 @@ private function eliminarProyecto($modelo) {
     /*
     * Muestra la sección de contacto
     */
-   public function Contacto() {
+    public function Contacto() {
     
         $this->validarSesion();
         

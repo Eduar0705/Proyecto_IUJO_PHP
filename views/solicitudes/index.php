@@ -23,6 +23,7 @@
         <div class="container">
             <h1 class="mt-4">Solicitudes</h1>
             <p>Aquí puedes gestionar las solicitudes.</p>
+            <a href="?action=admin&method=solicitudesUsuario" class="btn btn-primary">Solicitudes de registro usuarios</a>
             <div class="card mt-4">
                 <div class="card-body">
                     <h5 class="card-title">Solicitudes Pendientes</h5>
@@ -66,75 +67,19 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Sarah Williams</td>
-                                        <td class="text-muted">Actualización de permisos</td>
-                                        <td class="text-muted">
-                                            <i class="bi bi-calendar3 me-2"></i>
-                                            12/05/2023
-                                        </td>
-                                        <td>
-                                            <span class="status-badge" style="background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;">
-                                                <i class="bi bi-check-circle me-1"></i>
-                                                Aprobado
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="action-buttons">
-                                                <button type="button" class="btn btn-view" title="Ver detalles">
-                                                    <i class="bi bi-eye"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-edit" title="Editar">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-delete" title="Eliminar">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">David Chen</td>
-                                        <td class="text-muted">Solicitud de vacaciones</td>
-                                        <td class="text-muted">
-                                            <i class="bi bi-calendar3 me-2"></i>
-                                            15/05/2023
-                                        </td>
-                                        <td>
-                                            <span class="status-badge" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;">
-                                                <i class="bi bi-x-circle me-1"></i>
-                                                Rechazado
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="acciones-tabla">
-                                            <button type="button" class="btn accion-ver" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                            </button>
-                                            <button type="button" class="btn accion-editar" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button type="button" class="btn accion-eliminar" title="Eliminar">
-                                            <i class="bi bi-trash"></i>
-                                            </button>
-                                            </div>
-                                        </td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
-        </div> <br><br><br>
+        </div>
         <footer>
         <div class="footer-content">
             <p>&copy; 2025 INVILARA. Todos los derechos reservados.</p>
         </div>
     </footer>
     </main>
-
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="assets/js/menu.js"></script>

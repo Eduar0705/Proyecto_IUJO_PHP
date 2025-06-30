@@ -15,13 +15,12 @@
     <header class="admin-header">
         <?php include 'views/layout/header_Admin.php'; ?>
     </header>
-    
-    <div class="sidebar-container">
-        <?php include 'views/layout/menuAdmin.php'; ?>
-    </div>
     <main class="main-content">
         <div class="container">
-            <h1 class="mt-4">Configuración</h1>
+            <h1 class="mt-4">Solicitudes de Registro</h1>
+            <a href="?action=admin&method=solicitudes" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
             <div class="card mt-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
