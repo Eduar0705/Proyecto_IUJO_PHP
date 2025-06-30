@@ -26,7 +26,6 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title">Lista de Usuarios</h5>
-                        <a href="?action=admin&method=solicitudesUsuario">Solicitudes de Registro</a>
                         <input type="text" class="form-control w-25" placeholder="Buscar por nombre o usuario" id="searchInput">
                     </div>
                     <div class="table-resposive">
@@ -52,19 +51,12 @@
                                         <td><?php echo htmlspecialchars($fila['cedula'] ?? ''); ?></td>
                                         <td><?php echo htmlspecialchars(($fila['id_cargo'] ?? '') == 1 ? 'Administrador' : 'Usuario'); ?></td>
                                         <td>
-                                            <button 
-                                                class="btn btn-primary btn-sm btn-success openModalEditar"
-                                                data-id="<?php echo $fila['id']; ?>"
-                                                data-nombre="<?php echo htmlspecialchars($fila['nombre']); ?>"
-                                                data-usuario="<?php echo htmlspecialchars($fila['usuario']); ?>"
-                                                data-email="<?php echo htmlspecialchars($fila['email']); ?>"
-                                                data-cedula="<?php echo htmlspecialchars($fila['cedula']); ?>"
-                                                data-cargo="<?php echo $fila['id_cargo']; ?>"
-                                            >
-                                                <i class="bi bi-pencil-square"></i>
-                                            </button>
-                                            <a href="?action=admin&method=eliminarUsuario&id=<?php echo $fila['id']; ?>" 
-                                                class="btn btn-danger btn-sm" onclick="confirmarEliminacion(event, this.href)">
+                                            <a href="?action=admin&method=validarSolicitud&id=<?php echo $fila['id']; ?>" 
+                                                class=" btn btn-success" onclick="confirmarAgregacion(event, this.href)">
+                                                <i class="bi bi-check"></i>
+                                            </a>
+                                            <a href="?action=admin&method=eliminarSolicitud&id=<?php echo $fila['id']; ?>" 
+                                                class=" btn btn-danger btn-sm" onclick="confirmarEliminacion(event, this.href)">
                                                 <i class="bi bi-trash"></i>
                                             </a>
                                         </td>
@@ -151,6 +143,24 @@
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        }
+        function confirmarAgregacion(event, url) {
+            event.preventDefault(); 
+            
+            Swal.fire({
+                title: '¿Añadir el usuario al sistéma?',
+                text: "¡Debe estar capacitado para usar el sistéma!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, Aceptar',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {

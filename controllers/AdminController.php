@@ -2,6 +2,9 @@
 require_once 'model/Conexion.php';
 require_once 'model/Inventariado.php';
 require_once 'model/Inicio.php';
+require_once 'model/contacto.php';
+require_once 'model/ProyectoModel.php';
+require_once 'model/config.php';
 
 class AdminController 
 {
@@ -10,11 +13,15 @@ class AdminController
     private $modeloDB;
     public $productos;
     public $categorias;
+    public $model;
+    private $config;
 
     public function __construct() 
     {
         $this->iniciarSesion();
         $this->modelo = new Inventariado();
+        $this->model = new ContactoModel();
+        $this->config = new Configuracion();
     }
 
     /**
@@ -67,10 +74,73 @@ class AdminController
         
         require_once 'views/usuarios/registro.php';
     }
+    public function solicitudesUsuario()
+    {
+        $this->validarSesion();
+        $title = "Solicitudes de Cuenta";
+         $this->validarSesion();
+        
+        $nombre = $_SESSION['nombre'];
+        $res = $this->config->buscarSolicitud();
+        require_once 'views/usuarios/solicitudes_registro.php';
+    }
 
     /**
     * Registra un nuevo usuario en el sistema
     */
+    public function validarSolicitud()
+    {
+        if(!isset($this->modeloDB))
+        {
+            $this->modeloDB = new BaseDatos();
+        }
+        $id = $_GET['id'];
+        $sql = "SELECT * FROM solicitud_registro WHERE id = {$id}";
+        $conex = $this->modeloDB->conectar();
+        $resultado = $conex->query($sql);
+        $found_user = mysqli_fetch_assoc($resultado);
+        $nombre = $found_user['nombre'];
+        $usuario = $found_user['usuario'];
+        $clave = $found_user['clave'];
+        $email = $found_user['email'];
+        $cedula = $found_user['cedula'];
+        if($this->insertarNuevoUsuario('informacion', $nombre, $usuario, $clave, $email, $cedula, $conex))
+        {
+            header("Location:?action=admin&method=configuracion");
+            exit;
+        }
+        else
+        {
+            header("Location:?action=admin&method=solicitudesUsuario");
+        }
+
+    }
+    public function insertarNuevoUsuario($tabla, $nombre, $usuario, $password, $email, $cedula, $db)
+    {
+        $consulta = "INSERT INTO {$tabla} (nombre, usuario, clave, email, cedula, id_cargo) VALUES (?, ?, ?, ?, ?, 2)";
+        $stmt = $db->prepare($consulta);
+        
+        if (!$stmt) {
+            throw new Exception("Error preparando inserción: " . mysqli_error($db));
+        }
+
+        $stmt->bind_param("sssss", $nombre, $usuario, $password, $email, $cedula);
+        $resultado = $stmt->execute();
+
+        if ($resultado) {
+            $mensaje = ($tabla === 'solicitud_registro') 
+                ? "Solicitud de registro enviada" 
+                : "Nuevo usuario registrado!";
+            $this->mostrarExito($mensaje);
+            $stmt->close();
+            return true;
+        } else {
+            $error = mysqli_error($this->db);
+            $this->mostrarError("Error al registrar usuario: {$error}");
+            $stmt->close();
+            return false;
+        }
+    }
     public function registrarUsuario()
     {
         if (!$this->esMetodoPost()) {
@@ -202,27 +272,33 @@ class AdminController
     * Muestra el formulario para actualizar producto
     */
     public function actualizar()
-    {
-        $this->validarSesion();
-        
-        $id = $this->validarId($_GET['id'] ?? null);
-        if (!$id) {
-            $this->redirigirConError("inventario", "ID no válido");
-            return;
-        }
-
-        try {
-            $nombre = $_SESSION['nombre'];
-            $datos = $this->modelo->actualizar($id);
-            $categorias = $datos['categorias'] ?? [];
-            $producto = $datos['productos'] ?? [];
-            
-            require 'views/inventario/actualizar.php';
-        } catch (Exception $e) {
-            $this->redirigirConError("inventario", "Error al cargar producto: " . $e->getMessage());
-        }
+{
+    $this->validarSesion();
+    
+    $id = $this->validarId($_GET['id'] ?? null);
+    if (!$id) {
+        $this->redirigirConError("inventario", "ID no válido");
+        return;
     }
 
+    try {
+        $nombre = $_SESSION['nombre'];
+        $this->modelo = new Inventariado(); // Asegurar instancia
+        $datos = $this->modelo->actualizar($id);
+        
+        // Mantener como objetos MySQLi result
+        $categorias = $datos['categorias'];
+        $producto = $datos['productos'];
+        require 'views/inventario/actualizar.php';
+    } catch (Exception $e) {
+        $this->redirigirConError("inventario", "Error al cargar producto: " . $e->getMessage());
+    }
+}
+    public function actualizarSubir()
+    {
+        $this->actualizar();
+        require 'views/inventario/index.php';
+    }
     /**
     * Genera reporte de inventario
     */
@@ -365,47 +441,290 @@ class AdminController
     * Muestra la configuración del administrador
     */
     public function configuracion(){
-        $this->validarSesion();
+         $this->validarSesion();
         
         $nombre = $_SESSION['nombre'];
         $title = "Configuración";
         
-        // Aquí podrías cargar la configuración desde el modelo
-        // $configuracion = $this->modelo->obtenerConfiguracion();
-        
+        if (isset($_POST['actualizar'])) {
+            $id       = $_POST['id_usuario'] ?? '';
+            $nombre   = $_POST['nombre'] ?? '';
+            $usuario  = $_POST['usuario'] ?? '';
+            $email    = $_POST['email'] ?? '';
+            $cedula   = $_POST['cedula'] ?? '';
+            $cargo    = $_POST['cargo'] ?? '';
+
+            try {
+                $this->config->actualizarUsuario($id, $nombre, $usuario, $email, $cedula, $cargo);
+                echo "<script>alert('Usuario actualizado con éxito'); window.location.href='?action=admin&method=configuracion';</script>";
+                exit;
+            } catch (Exception $e) {
+                echo "Error al actualizar usuario: " . $e->getMessage();
+            }
+        }
+
+        $res = $this->config->buscarUsuarios();
         require_once 'views/configuracion/index.php';
+    }
+
+
+    public function eliminarUsuario()
+    {
+        $this->validarSesion();
+        
+        $id = $_GET['id'] ?? null;
+        if (!$id || !is_numeric($id)) {
+            $this->redirigirConError("configuracion", "ID no válido");
+            return;
+        }
+
+        try {
+            $resultado = $this->config->eliminarUsuario($id);
+            if ($resultado) {
+                $this->redirigirConExito("configuracion", "Usuario eliminado correctamente");
+            } else {
+                $this->redirigirConError("configuracion", "Error al eliminar usuario");
+            }
+        } catch (Exception $e) {
+            $this->redirigirConError("configuracion", "Error: " . $e->getMessage());
+        }
     }
 
     //PROYECTOS MENSUALES
     /*
     * Muestra el inicio de proyectos mensuales
     */
-    public function proyectos(){
-        $this->validarSesion();
+    public function proyectos() {
+    $this->validarSesion();
+    
+    $nombre = $_SESSION['nombre'] ?? 'Usuario';
+    $title = "Proyectos Mensuales";
+    
+    try {
+        $modeloProyectos = new ProyectoModel();
         
-        $categoria_id = $_GET['categoria_id'] ?? '';
-        $nombre = $_SESSION['nombre'];
-        $title = "Proyectos Mensuales";
+        // Procesar operaciones CRUD si existen
+        if (isset($_GET['eliminar'])) {
+            $this->eliminarProyecto($modeloProyectos);
+        }
         
-        // Aquí podrías cargar los proyectos desde el modelo
-        // $proyectos = $this->modelo->obtenerProyectos();
+        // Obtener datos para la vista
+        $busqueda = $_GET['busqueda'] ?? '';
+        $proyectos = $modeloProyectos->obtenerTodos($busqueda);
+        $estadisticas = $modeloProyectos->obtenerEstadisticas();
         
         require_once 'views/proyectos/index.php';
+        
+    } catch (Exception $e) {
+        $this->redirigirConError("proyectos", $e->getMessage());
     }
+}
+
+/**
+ * Muestra el formulario para crear/editar proyecto
+ */
+    public function gestionarProyecto() {
+    $this->validarSesion();
+    
+    $id = $this->validarId($_GET['id'] ?? null);
+    $title = $id ? "Editar Proyecto" : "Nuevo Proyecto";
+    $nombre = $_SESSION['nombre'] ?? 'Usuario'; // ← AÑADE ESTA LÍNEA
+    
+    try {
+        $modeloProyectos = new ProyectoModel();
+        $proyecto = $id ? $modeloProyectos->obtenerPorId($id) : null;
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->guardarProyecto($modeloProyectos, $id);
+        }
+        
+        require_once 'views/proyectos/formulario.php';
+        
+    } catch (Exception $e) {
+        $this->redirigirConError("proyectos", $e->getMessage());
+    }
+}
+
+/**
+ * Guarda un proyecto (creación o actualización)
+ */
+private function guardarProyecto($modelo, $id = null) {
+    $datos = [
+        'nombre' => $_POST['nombre'] ?? '',
+        'descripcion' => $_POST['descripcion'] ?? '',
+        'fecha_inicio' => $_POST['fecha_inicio'] ?? '',
+        'fecha_fin' => $_POST['fecha_fin'] ?? '',
+        'estado' => $_POST['estado'] ?? 'planificado'
+    ];
+    
+    // Validaciones básicas
+    if (empty($datos['nombre'])) {
+        throw new Exception("El nombre del proyecto es obligatorio");
+    }
+    
+    if (empty($datos['fecha_inicio'])) {
+        throw new Exception("La fecha de inicio es obligatoria");
+    }
+    
+    if ($id) {
+        $resultado = $modelo->actualizar($id, $datos);
+        $mensaje = "Proyecto actualizado correctamente";
+    } else {
+        $resultado = $modelo->crear($datos);
+        $mensaje = "Proyecto creado correctamente";
+    }
+    
+    $this->redirigirConExito("proyectos", $mensaje);
+}
+
+/**
+ * Elimina un proyecto
+ */
+private function eliminarProyecto($modelo) {
+    $id = $this->validarId($_GET['eliminar']);
+    if (!$id) {
+        throw new Exception("ID de proyecto no válido");
+    }
+    
+    $resultado = $modelo->eliminar($id);
+    
+    if ($resultado) {
+        $this->redirigirConExito("proyectos", "Proyecto eliminado correctamente");
+    } else {
+        throw new Exception("No se pudo eliminar el proyecto");
+    }
+}
 
     //CONTACTO
     /*
     * Muestra la sección de contacto
     */
-    public function contacto(){
+   public function Contacto() {
+    
         $this->validarSesion();
         
+        $busqueda = $_GET['busqueda'] ?? '';
+        $title = "Gestión de Contactos";
         $nombre = $_SESSION['nombre'];
-        $title = "Contacto";
         
-        // Aquí podrías cargar la información de contacto desde el modelo
-        // $contacto = $this->modelo->obtenerContacto();
-        
-        require_once 'views/contacto/index.php';
+        try {
+            $contactos = $this->model->obtenerTodos($busqueda);
+            
+            if (empty($contactos)) {
+                $_SESSION['warning'] = "No se encontraron contactos";
+            }
+            
+            require_once 'views/contacto/index.php';
+            
+        } catch (Exception $e) {
+            $_SESSION['error'] = "Error al cargar contactos: " . $e->getMessage();
+            header("Location: ?action=admin&method=home");
+            exit();
+        }
     }
+
+    /**
+    * Crea un nuevo contacto
+    */
+    public function crearContacto() {
+        $this->validarSesion();
+        
+        $title = "Agregar Contacto";
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                if (empty($_POST['nombre'])) {
+                    throw new Exception("El nombre es obligatorio");
+                }
+                
+                if (empty($_POST['email'])) {
+                    throw new Exception("El email es obligatorio");
+                }
+
+                $resultado = $this->model->crearContacto($_POST);
+                
+                if ($resultado) {
+                    $this->redirigirConExito("contacto", "Contacto creado correctamente");
+                } else {
+                    throw new Exception("No se pudo crear el contacto");
+                }
+            } catch (Exception $e) {
+                $error = $e->getMessage();
+                require_once 'views/contacto/crear.php';
+            }
+        } else {
+            require_once 'views/contacto/crear.php';
+        }
+    }
+
+    /**
+    * Actualiza un contacto existente
+    */
+    public function actualizarContacto() {
+        $this->validarSesion();
+        
+        $id = $this->validarId($_GET['id'] ?? null);
+        if (!$id) {
+            $this->redirigirConError("contacto", "ID de contacto no válido");
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $resultado = $this->model->actualizarContacto($id, $_POST);
+                
+                if ($resultado) {
+                    $this->redirigirConExito("contacto", "Contacto actualizado correctamente");
+                } else {
+                    throw new Exception("No se pudo actualizar el contacto");
+                }
+            } catch (Exception $e) {
+                $this->redirigirConError("contacto", $e->getMessage());
+            }
+        }
+
+        try {
+            $contacto = $this->model->obtenerContactoPorId($id);
+            if (!$contacto) {
+                throw new Exception("Contacto no encontrado");
+            }
+
+            $title = "Editar Contacto";
+            require_once 'views/contacto/editar.php';
+        } catch (Exception $e) {
+            $this->redirigirConError("contacto", $e->getMessage());
+        }
+    }
+
+    /**
+    * Elimina un contacto
+    */
+    public function eliminarContacto() {
+        $this->validarSesion();
+        
+        $id = $this->validarId($_GET['id'] ?? null);
+        if (!$id) {
+            $this->redirigirConError("contacto", "ID de contacto no válido");
+            return;
+        }
+
+        try {
+            $contacto = $this->model->obtenerContactoPorId($id);
+            if (!$contacto) {
+                throw new Exception("Contacto no encontrado");
+            }
+
+            $resultado = $this->model->eliminarContacto($id);
+            
+            if ($resultado) {
+                $this->redirigirConExito("contacto", "Contacto eliminado correctamente");
+            } else {
+                throw new Exception("No se pudo eliminar el contacto");
+            }
+        } catch (Exception $e) {
+            $this->redirigirConError("contacto", $e->getMessage());
+        }
+    }
+
+
 }

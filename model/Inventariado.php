@@ -604,7 +604,6 @@ class Inventariado
      */
     private function redirigirConExito($metodo, $mensaje)
     {
-        header("Location: ?action=admin&method={$metodo}&success=" . urlencode($mensaje));
         exit();
     }
 }

@@ -20,8 +20,8 @@ body {
     background-color: #f5f5f5;
     color: var(--dark-color);
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    display: flex; /* Cambiado de flex-direction: column; a flex para un layout más complejo con sidebar */
+    flex-wrap: wrap; /* Permite que los elementos envuelvan si no hay espacio */
 }
 
 /* Header Styles */
@@ -53,7 +53,8 @@ body {
     cursor: pointer;
     color: var(--dark-color);
     margin-right: 20px;
-    display: none;
+    /* Por defecto, lo ocultamos en pantallas grandes y lo mostramos en media queries */
+    display: none; /* Se mostrará en responsive */
 }
 
 .logo-header {
@@ -127,18 +128,21 @@ body {
     transition: all 0.3s ease;
     z-index: 999;
     overflow-y: auto;
-    transform: translateX(-100%);
+    /* Por defecto, en pantallas grandes, es visible. En móviles, se ocultará */
+    transform: translateX(0); /* Menú visible por defecto en escritorio */
 }
 
-.sidebar-container.active {
-    transform: translateX(0);
+/* Cuando el sidebar está activo (para pantallas móviles, o cuando se cierra en escritorio) */
+body.sidebar-closed .sidebar-container {
+    transform: translateX(-100%); /* Ocultar sidebar */
 }
+
 
 .sidebar-logo {
     padding: 20px;
     text-align: center;
     border-bottom: 1px solid var(--border-color);
-    display: none;
+    display: none; /* Se mostrará en responsive */
 }
 
 .sidebar-logo img {
@@ -165,7 +169,7 @@ body {
     position: relative;
 }
 
-.sidebar-menu a:hover, 
+.sidebar-menu a:hover,
 .sidebar-menu a.active {
     background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     color: white;
@@ -204,7 +208,7 @@ body {
 
 /* Main Content Styles */
 .main-content {
-    margin-left: var(--sidebar-width);
+    margin-left: var(--sidebar-width); /* Ajuste para el espacio del sidebar */
     margin-top: var(--header-height);
     padding: 30px;
     flex: 1;
@@ -213,294 +217,34 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: calc(100vh - var(--header-height));
-    width: calc(100% - var(--sidebar-width));
+    width: calc(100% - var(--sidebar-width)); /* El ancho se ajusta al sidebar */
 }
 
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+/* Ajuste para cuando el sidebar está cerrado (en desktop si se implementa un botón de cierre) */
+body.sidebar-closed .main-content {
+    margin-left: 0;
     width: 100%;
-    max-width: 1200px;
 }
 
-.page-title {
-    font-size: 24px;
-    font-weight: 600;
-}
 
-.btn {
-    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-    box-shadow: 0 4px 6px rgba(255, 77, 77, 0.3);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Tables */
-.table-container {
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px var(--shadow-color);
+/* Formulario de Edición */
+.form-centered-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
     padding: 20px;
-    margin-bottom: 30px;
-    overflow-x: auto;
-    width: 100%;
-    max-width: 1200px;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-}
-
-th {
-    background-color: var(--light-color);
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 13px;
-    color: #757575;
-}
-
-tr:hover {
-    background-color: var(--light-color);
-}
-
-.status {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #757575;
-    margin: 0 5px;
-    transition: all 0.3s ease;
-    font-size: 16px;
-}
-
-.action-btn:hover {
-    color: var(--primary-color);
-}
-
-.search-form {
-    display: flex;
-    gap: 7px; 
-    flex-wrap: wrap;
-    align-items: center; 
-    margin-bottom: 20px;
-}
-
-.search-form .form-group {
-    flex: 1; 
-    min-width: 200px; 
-}
-
-.search-form .btn {
-    flex-shrink: 0; 
-    align-self: flex-start; 
-    height: fit-content; 
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #555;
-}
-
-.form-control {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    background-color: var(--light-color);
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.2);
-    background-color: white;
-}
-
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.card {
-    animation: fadeIn 0.5s ease-out forwards;
-}
-
-.card:nth-child(1) { animation-delay: 0.1s; }
-.card:nth-child(2) { animation-delay: 0.2s; }
-.card:nth-child(3) { animation-delay: 0.3s; }
-.card:nth-child(4) { animation-delay: 0.4s; }
-
-/* Custom styles for specific modules */
-.proyectos-section, 
-.recursos-section, 
-.evaluacion-section {
-    margin-bottom: 40px;
-    width: 100%;
-    max-width: 1200px;
-}
-
-.section-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--border-color);
-    color: var(--primary-color);
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #ff3333;
-}
-
-/* Footer Styles */
-footer {
-    background-color: #f1f1f1;
-    text-align: center;
-    padding: 15px;
-    font-size: 14px;
-    color: #757575;
-    margin-top: auto;
-    width: 100%;
-}
-
-/* Contenedor principal del formulario */
-.form-search-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 25px;
-    width: 100%;
-}
-
-/* Formulario de búsqueda con ancho controlado */
-.search-form {
-    width: 100%;
-    max-width: 900px; 
-}
-
-/* Fila que contiene los elementos */
-.form-row {
-    display: flex;
-    align-items: flex-end; 
-    gap: 10px;
-    width: 100%;
-}
-
-/* Campos de formulario */
-.form-field {
-    flex: 1;
-}
-
-/* Contenedor del botón */
-.form-button {
-    flex-shrink: 0; 
-}
-
-/* Estilos comunes para todos los elementos */
-.form-control, 
-.form-select,
-.form-button .btn {
-    height: 45px; 
-    box-sizing: border-box;
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-}
-
-/* Estilo específico para el botón */
-.form-button .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(to right, rgba(255, 77, 77, 0.8), rgba(255, 179, 71, 0.8));
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-    width: 100%;
-}
-
-.form-button .btn:hover {
-    background: linear-gradient(to right, rgba(255, 51, 51, 0.9), rgba(255, 167, 38, 0.9));
-    box-shadow: 0 6px 10px rgba(255, 77, 77, 0.4);
-    transform: translateY(-2px);
-}
-
-.form-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 15px;
-}
-
-/* Formulario centrado con bordes y sombra destacados */
 .centered-form {
     background-color: white;
     border-radius: 12px;
     padding: 40px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    border: 1px solid #e0e0e0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
 }
 
-/* Efecto adicional para el borde */
 .centered-form::before {
     content: "";
     position: absolute;
@@ -511,10 +255,26 @@ footer {
     background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
 }
 
-/* Grupos de formulario */
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.form-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--dark-color);
+    display: flex;
+    align-items: center;
+}
+
 .form-group {
     margin-bottom: 25px;
-    position: relative;
     padding: 15px;
     border-radius: 8px;
     background-color: #f9f9f9;
@@ -535,8 +295,12 @@ footer {
     font-size: 16px;
 }
 
-/* Campos de formulario */
-.form-control, 
+.required-field::after {
+    content: " *";
+    color: var(--primary-color);
+}
+
+.form-control,
 .form-select {
     width: 100%;
     padding: 14px 16px;
@@ -548,14 +312,13 @@ footer {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.form-control:focus, 
+.form-control:focus,
 .form-select:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.2);
 }
 
-/* Estilo para el select */
 .form-select {
     appearance: none;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -564,19 +327,24 @@ footer {
     background-size: 16px;
 }
 
-/* Contenedor de botones */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+/* Botones mejorados */
 .form-actions {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    margin-top: 30px;
-    padding: 15px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    border: 1px solid #f0f0f0;
+    gap: 25px;
+    margin-top: 40px;
+    padding-top: 25px;
+    border-top: 1px solid var(--border-color);
+    flex-wrap: wrap;
 }
 
-/* Estilos para botones */
 .btn {
     padding: 14px 30px;
     border-radius: 8px;
@@ -586,18 +354,17 @@ footer {
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    border: none;
-    min-width: 150px;
     justify-content: center;
+    gap: 10px;
+    min-width: 180px;
+    text-align: center;
+    border: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-save {
     background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     color: white;
-    border: 1px solid #ff4d4d;
 }
 
 .btn-save:hover {
@@ -606,258 +373,32 @@ footer {
     box-shadow: 0 6px 12px rgba(255, 77, 77, 0.25);
 }
 
-.btn-cancel {
-    background-color: white;
-    color: #6c757d;
-    border: 1px solid #6c757d;
-}
-
-.btn-cancel:hover {
-    background-color: #f8f9fa;
-    color: #5a6268;
-    border-color: #5a6268;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(108, 117, 125, 0.15);
-}
-
-/* Encabezado del formulario */
-.form-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f0f0f0;
-}
-
-.form-title {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 600;
-    color: var(--dark-color);
-    display: flex;
-    align-items: center;
-}
-
-/* Botón Volver */
-.btn-cancel {
-    background-color: white;
-    color: #6c757d;
-    border: 1px solid #6c757d;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.btn-cancel:hover {
-    background-color: #f8f9fa;
-    color: #5a6268;
-    border-color: #5a6268;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
-}
-
-/* Para formularios con múltiples columnas */
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 10px;
-}
-
-/* Botón de reset */
 .btn-reset {
     background-color: #f8f9fa;
     color: #6c757d;
     border: 1px solid #dee2e6;
-    padding: 12px 25px;
 }
 
 .btn-reset:hover {
     background-color: #e9ecef;
     color: #5a6268;
     border-color: #ced4da;
-}
-
-/* Estilos para botones de exportación específicos */
-.btn-excel {
-    background-color: white !important;
-    color: #28a745 !important;
-    border: 2px solid #28a745 !important;
-    padding: 10px 15px !important;
-    border-radius: 8px !important;
-    text-decoration: none !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    font-weight: 600 !important;
-    transition: all 0.3s ease !important;
-}
-
-.btn-pdf {
-    background-color: white !important;
-    color: #dc3545 !important;
-    border: 2px solid #dc3545 !important;
-    padding: 10px 15px !important;
-    border-radius: 8px !important;
-    text-decoration: none !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    font-weight: 600 !important;
-    transition: all 0.3s ease !important;
-}
-
-.btn-excel:hover {
-    background-color: rgba(40, 167, 69, 0.1) !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
-.btn-pdf:hover {
-    background-color: rgba(220, 53, 69, 0.1) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Botón principal (Nuevo Producto) */
-.btn-primary {
-    background: white !important;
-    color: var(--primary-color) !important;
-    border: 2px solid var(--primary-color) !important;
-    padding: 10px 15px !important;
-    border-radius: 8px !important;
-    text-decoration: none !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    font-weight: 600 !important;
-    transition: all 0.3s ease !important;
-}
-
-.btn-primary:hover {
-    background: linear-gradient(to right, rgba(255, 77, 77, 0.1), rgba(255, 179, 71, 0.1)) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Contenedor de botones de acción */
-.action-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    gap: 15px;
-    flex-wrap: wrap;
-    width: 100%;
-    max-width: 1200px;
-}
-
-.export-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-/* Botón de búsqueda */
-.search-form .btn {
-    background: white !important;
-    color: var(--primary-color) !important;
-    border: 2px solid var(--primary-color) !important;
-    padding: 10px 15px !important;
-}
-
-.search-form .btn:hover {
-    background: linear-gradient(to right, rgba(255, 77, 77, 0.1), rgba(255, 179, 71, 0.1)) !important;
-    color: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
-}
-
-/* Botón de registro */
-.action-buttons > a.btn {
-    background: white !important;
-    color: var(--primary-color) !important;
-    border: 2px solid var(--primary-color) !important;
-    padding: 10px 15px !important;
-}
-
-.action-buttons > a.btn:hover {
-    background: linear-gradient(to right, rgba(255, 77, 77, 0.1), rgba(255, 179, 71, 0.1)) !important;
-    color: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
-}
-
-/* Estilos para las acciones de la tabla */
-.table-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.action-link {
-    background: none !important;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
+.btn-cancel {
+    background-color: white;
+    color: #6c757d;
+    border: 1px solid #6c757d;
+    padding: 10px 20px;
     text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    border-radius: 4px;
 }
 
-.action-link i {
-    font-size: 14px;
-}
-
-/* Estilo específico para editar */
-.edit-action {
-    color: #ffc107;
-    border: 1px solid #ffc107;
-    background-color: white !important;
-}
-
-.edit-action:hover {
-    background-color: rgba(255, 193, 7, 0.1) !important;
-    color: #e0a800;
-}
-
-/* Estilo específico para eliminar */
-.delete-action {
-    color: #dc3545;
-    border: 1px solid #dc3545;
-    background-color: white !important;
-}
-
-.delete-action:hover {
-    background-color: rgba(220, 53, 69, 0.1) !important;
-    color: #bd2130;
-}
-
-/* Contenedor principal centrado */
-.form-centered-container {
-    max-width: 800px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-/* Título del formulario */
-.form-title {
-    text-align: center;
-    margin-bottom: 25px;
-    color: var(--dark-color);
-    font-size: 28px;
-    font-weight: 600;
-    position: relative;
-    padding-bottom: 10px;
+.btn-cancel:hover {
+    background-color: #f8f9fa;
+    color: #5a6268;
+    border-color: #5a6268;
+    transform: translateY(-2px);
 }
 
 /* Responsive Styles */
@@ -865,24 +406,24 @@ footer {
     .sidebar-container {
         width: 250px;
     }
-    
+
     .main-content {
         margin-left: 250px;
         width: calc(100% - 250px);
     }
 
     .menu-toggle {
-        display: block;
+        display: block; /* Muestra el botón de hamburguesa */
     }
-    
+
     .sidebar-logo {
         display: block;
     }
-    
+
     .user-nav {
         margin-left: auto;
     }
-    
+
     .welcome-msg {
         display: none;
     }
@@ -890,100 +431,105 @@ footer {
     .admin-header {
         padding: 0 15px;
     }
-    
+
     .logo-header h1 {
         font-size: 1.2rem;
     }
-    
+
     .btn-user-action span {
         display: none;
     }
-    
+
     .btn-user-action i {
         font-size: 1.1rem;
     }
-    
+}
+
+@media (max-width: 992px) {
     .main-content {
         padding: 20px 15px;
-        margin-left: 0;
-        width: 100%;
-    }
-    
-    .sidebar-container {
-        transform: translateX(-100%);
-    }
-    
-    .sidebar-container.active {
-        transform: translateX(0);
-    }
-    
-    .cards-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .logo-header h1 {
-        display: none;
-    }
-    
-    .form-container,
-    .form-centered {
-        padding: 20px;
-    }
-    
-    .btn {
-        padding: 8px 15px;
-        font-size: 13px;
-    }
-
-    .form-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .form-control, 
-    .form-select,
-    .form-button .btn {
-        width: 100%;
-        height: auto;
-        padding: 12px;
     }
 
     .form-centered-container {
         padding: 15px;
     }
-    
+
     .centered-form {
         padding: 25px;
-        border-radius: 10px;
     }
-    
+}
+
+@media (max-width: 768px) {
+    /* En pantallas pequeñas, el sidebar se oculta por defecto */
+    .sidebar-container {
+        transform: translateX(-100%);
+    }
+
+    /* Cuando el sidebar está activo en móviles */
+    .sidebar-container.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0; /* No hay margen izquierdo porque el sidebar está oculto */
+        width: 100%; /* Ocupa todo el ancho */
+    }
+
+    /* Cuando el sidebar está activo en móviles, el main-content no debería moverse */
+    /* Puedes añadir un overlay o simplemente que no ocupe su espacio */
+    body.sidebar-active .main-content {
+        /* Opcional: Si quieres un overlay al abrir el sidebar */
+        /* position: relative; */
+        /* &::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+        } */
+    }
+
+    .form-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
     .form-actions {
         flex-direction: column;
         gap: 15px;
-        padding: 20px;
     }
-    
+
     .btn {
         width: 100%;
-        padding: 14px;
     }
-    
+
+    .logo-header h1 {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .centered-form {
+        padding: 20px;
+    }
+
     .form-group {
         padding: 12px;
     }
 
-    .action-buttons {
-        flex-direction: column;
+    .form-title {
+        font-size: 24px;
     }
-    
-    .export-buttons {
-        width: 100%;
-        justify-content: space-between;
+
+    .btn {
+        padding: 12px;
+        font-size: 15px;
     }
 }

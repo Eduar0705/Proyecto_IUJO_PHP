@@ -190,7 +190,7 @@ class Inicio
     /**
     * Inserta un nuevo usuario en la base de datos
     */
-    private function insertarNuevoUsuario($tabla, $nombre, $usuario, $password, $email, $cedula)
+    public function insertarNuevoUsuario($tabla, $nombre, $usuario, $password, $email, $cedula)
     {
         $consulta = "INSERT INTO {$tabla} (nombre, usuario, clave, email, cedula, id_cargo) VALUES (?, ?, ?, ?, ?, 2)";
         $stmt = $this->db->prepare($consulta);

@@ -17,9 +17,9 @@ spl_autoload_register(function($className) {
 });
 
 //Enrutamiento 
-$action = $_GET['action'] ?? 'Inicio';
+$action = $_GET['action'] ?? $_POST['action'] ?? 'Inicio';
 $actionName = ucfirst($action) . 'Controller';
-$method = $_GET['method'] ?? 'home';
+$method = $_GET['method'] ?? $_POST['method'] ?? 'home';
 $controllerFile = 'controllers/' . $actionName . '.php';
 
 if (file_exists($controllerFile)) {

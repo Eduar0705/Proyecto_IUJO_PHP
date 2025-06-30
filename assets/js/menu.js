@@ -5,16 +5,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainContent = document.querySelector('.main-content');
     const menuItems = document.querySelectorAll('.sidebar-menu a');
 
-    // 1. Función para activar el ítem correcto
+    // 1. Función para activar el ítem correcto basado en la URL actual
     function activateMenuItem() {
-        const currentUrl = new URL(window.location.href);
+        const currentPath = window.location.pathname + window.location.search;
         
         menuItems.forEach(item => {
-            if (item.href === '#') return;
+            // Extraer path + query params del enlace
+            const itemUrl = new URL(item.href);
+            const itemPath = itemUrl.pathname + itemUrl.search;
             
-            const itemUrl = new URL(item.href, window.location.origin);
-        
-            if (currentUrl.pathname === itemUrl.pathname) {
+            // Comparar paths (sin hash)
+            if (currentPath === itemPath) {
                 item.classList.add('active');
             } else {
                 item.classList.remove('active');
@@ -22,39 +23,55 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 2. Manejar clicks en el menú
+    // 2. Manejar clicks en el menú (solo para móvil)
     menuItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            if (this.href === '#') return;
-            
-            if (!this.href.includes('#')) {
-                e.preventDefault();
-                
-                menuItems.forEach(i => i.classList.remove('active'));
-                
-                this.classList.add('active');
-                
-                setTimeout(() => {
-                    window.location.href = this.href;
-                }, 300);
+        item.addEventListener('click', function() {
+            if (window.innerWidth <= 992) {
+                // Cerrar el menú en móvil después de hacer clic
+                sidebar.classList.remove('active');
+                mainContent.classList.remove('sidebar-active');
             }
         });
     });
 
-    // 3. Inicialización
+    // 3. Manejar el botón de toggle del menú
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            sidebar.classList.toggle('active');
+            mainContent.classList.toggle('sidebar-active');
+        });
+    }
+
+    // 4. Cerrar menú al hacer clic fuera (solo móvil)
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 992) {
+            if (!sidebar.contains(e.target) && 
+                !menuToggle.contains(e.target) && 
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                mainContent.classList.remove('sidebar-active');
+            }
+        }
+    });
+
+    // 5. Inicialización
     activateMenuItem();
     
-    // Responsive
+    // 6. Manejo responsive
     function handleResize() {
         if (window.innerWidth <= 992) {
+            // Versión móvil: menú oculto por defecto
             sidebar.classList.remove('active');
             mainContent.classList.remove('sidebar-active');
         } else {
+            // Versión desktop: menú siempre visible
             sidebar.classList.add('active');
             mainContent.classList.add('sidebar-active');
         }
     }
     
+    // Ejecutar al cargar y al cambiar tamaño
     handleResize();
     window.addEventListener('resize', handleResize);
 });

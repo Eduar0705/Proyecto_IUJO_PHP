@@ -7,8 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/admin.css">
-    <link rel="stylesheet" href="assets/css/solicitudes.css">
+   
+    <link rel="stylesheet" href="assets/css/solicitudes2.css">
     <link rel="icon" href="assets/img/Logo1.png" type="image/x-icon">
 </head>
 <body>
@@ -20,7 +20,7 @@
         <?php include 'views/layout/menuAdmin.php'; ?>
     </div>
 
-    <main class="main-content">
+     <main class="main-content">
         <div class="container">
             <h1 class="mt-4">Solicitudes</h1>
             <p>Aquí puedes gestionar las solicitudes.</p>
@@ -108,16 +108,16 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <div class="action-buttons">
-                                                <button type="button" class="btn btn-view" title="Ver detalles">
-                                                    <i class="bi bi-eye"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-edit" title="Editar">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-delete" title="Eliminar">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                                            <div class="acciones-tabla">
+                                            <button type="button" class="btn accion-ver" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn accion-editar" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button type="button" class="btn accion-eliminar" title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                            </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -127,14 +127,15 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
-
-    <footer>
+        </div> <br><br><br>
+        <footer>
         <div class="footer-content">
             <p>&copy; 2025 INVILARA. Todos los derechos reservados.</p>
         </div>
     </footer>
+    </main>
+
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="assets/js/menu.js"></script>

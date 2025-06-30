@@ -36,7 +36,6 @@ $es_admin = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 1;
                     <p>Administrativa</p>
                 </div>
             </div>
-        </main>
         
         <div class="quick-access-container">
             <h2 class="quick-access-title">Accesos Rápidos</h2>
@@ -47,40 +46,25 @@ $es_admin = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 1;
                     <h3>Inventario</h3>
                 </a>
                 
-                <a href="../php/registro.php" class="quick-access-item">
-                    <i class="fas fa-users-cog"></i>
-                    <h3>Usuarios</h3>
-                </a>
-                
-                <a href="../proyectos.php" class="quick-access-item">
-                    <i class="fas fa-project-diagram"></i>
-                    <h3>Proyectos</h3>
-                </a>
-                
-                <!-- Fila 2 -->
-                <a href="../recursos.php" class="quick-access-item">
-                    <i class="fas fa-utensils"></i>
-                    <h3>Recursos</h3>
-                </a>
-                
-                <a href="../evaluacion.php" class="quick-access-item">
-                    <i class="fas fa-chart-bar"></i>
-                    <h3>Evaluación</h3>
-                </a>
-                
+                <a href="?action=admin&method=proyectos" class="quick-access-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Proyectos Mensuales</h3>
+
                 <a href="../configuracion.php" class="quick-access-item">
                     <i class="fas fa-sliders-h"></i>
                     <h3>Configuración</h3>
                 </a>
+                
             </div>
-        </div>
-    </main>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="assets/js/menu.js"></script>
-    <footer>
+        </div> <br><br>
+        <footer>
         <div class="footer-content">
             <p>&copy; 2025 INVILARA. Todos los derechos reservados.</p>
         </div>
     </footer>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="assets/js/menu.js"></script>
+
 </body>
 </html>
