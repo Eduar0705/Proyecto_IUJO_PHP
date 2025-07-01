@@ -1,5 +1,6 @@
 # Proyecto Univesitario del IUJO Barquisimeto Sistematizacion de Invilara
-
+# Uso
+Se maneja una base de datos online. **Es innecesario importar el sql**
 ## Autores: 
 - Greymar Medina
 - Eduar Suarez
