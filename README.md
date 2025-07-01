@@ -1,5 +1,7 @@
 # Proyecto Univesitario del IUJO Barquisimeto Sistematizacion de Invilara
+**PROFESOR, ESTA NO ES LA BRANCH, USE LA MAIN**
 # Uso
+**PROFESOR, ESTA NO ES LA BRANCH, USE LA MAIN
 Se maneja una base de datos online. **Es innecesario importar el sql**
 ## Autores: 
 - Greymar Medina
