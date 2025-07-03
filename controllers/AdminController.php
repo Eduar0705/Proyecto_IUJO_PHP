@@ -88,8 +88,7 @@ class AdminController
     /**
     * Registra un nuevo usuario en el sistema
     */
-    public function validarSolicitud()
-    {
+    public function validarSolicitud(){
         if(!isset($this->modeloDB))
         {
             $this->modeloDB = new BaseDatos();
@@ -419,29 +418,28 @@ class AdminController
     /**
     * Muestra el formulario para actualizar producto
     */
-    public function actualizar()
-{
-    $this->validarSesion();
-    
-    $id = $this->validarId($_GET['id'] ?? null);
-    if (!$id) {
-        $this->redirigirConError("inventario", "ID no válido");
-        return;
-    }
-
-    try {
-        $nombre = $_SESSION['nombre'];
-        $this->modelo = new Inventariado(); // Asegurar instancia
-        $datos = $this->modelo->actualizar($id);
+    public function actualizar(){
+        $this->validarSesion();
         
-        // Mantener como objetos MySQLi result
-        $categorias = $datos['categorias'];
-        $producto = $datos['productos'];
-        require 'views/inventario/actualizar.php';
-    } catch (Exception $e) {
-        $this->redirigirConError("inventario", "Error al cargar producto: " . $e->getMessage());
+        $id = $this->validarId($_GET['id'] ?? null);
+        if (!$id) {
+            $this->redirigirConError("inventario", "ID no válido");
+            return;
+        }
+
+        try {
+            $nombre = $_SESSION['nombre'];
+            $this->modelo = new Inventariado(); // Asegurar instancia
+            $datos = $this->modelo->actualizar($id);
+            
+            // Mantener como objetos MySQLi result
+            $categorias = $datos['categorias'];
+            $producto = $datos['productos'];
+            require 'views/inventario/actualizar.php';
+        } catch (Exception $e) {
+            $this->redirigirConError("inventario", "Error al cargar producto: " . $e->getMessage());
+        }
     }
-}
     public function actualizarSubir()
     {
         $this->actualizar();

@@ -6,6 +6,13 @@
     --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     --hover-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
+.modal-backdrop {
+    z-index: 9999999; /* ⚠️ No abuses de z-index */
+}
+
+body.modal-open {
+    overflow: hidden !important; /* Esto puede causar scroll bloqueado */
+}
 
 .main-content {
     min-height: 100vh;
