@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title><?= APP_NAME ?> - Editar Contacto</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="shortcut icon" href="assets/img/Logo1.png" type="image/x-icon">
+    <link rel="stylesheet" href="assets/css/menu.css">
     <link rel="stylesheet" href="assets/css/contacto.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="assets/img/Logo1.png" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <?php
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-        $nombre = $_SESSION['nombre'];
-    }
-    ?>
-    
     <header class="admin-header">
         <?php 
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         $nombre = $_SESSION['nombre'];
         include 'views/layout/header_Admin.php'; 
         ?>

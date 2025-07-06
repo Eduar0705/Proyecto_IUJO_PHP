@@ -4,10 +4,26 @@ class SolicitudModel {
 
     public function __construct($db) {
         $this->db = $db;
+        
     }
 
-    // Crear nueva solicitud
     public function crearSolicitud($datos) {
+        // Validar campos obligatorios
+        if (empty($datos['id_usuario']) || empty($datos['titulo']) || empty($datos['tipo'])) {
+            throw new Exception("Datos incompletos para crear la solicitud");
+        }
+        
+        // Validar que el tipo sea uno de los permitidos
+        $tiposPermitidos = ['oficina', 'comida', 'proyecto'];
+        if (!in_array($datos['tipo'], $tiposPermitidos)) {
+            throw new Exception("Tipo de solicitud no válido");
+        }
+        
+        // Asegurar que los datos específicos sean un array antes de convertirlos a JSON
+        if (!is_array($datos['datos'])) {
+            throw new Exception("Los datos específicos deben ser un array");
+        }
+        
         $sql = "INSERT INTO solicitudes 
                 (id_informacion, titulo, tipo, datos, fecha_creacion, estado) 
                 VALUES 
@@ -15,10 +31,10 @@ class SolicitudModel {
         
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            ':id_informacion' => $datos['id_usuario'], // Asumo que id_informacion es el ID del usuario
-            ':titulo' => $datos['titulo'],
+            ':id_informacion' => (int)$datos['id_usuario'],
+            ':titulo' => trim($datos['titulo']),
             ':tipo' => $datos['tipo'],
-            ':datos' => $datos['datos'], // JSON con los datos específicos
+            ':datos' => json_encode($datos['datos']),
             ':estado' => 'Pendiente'
         ]);
     }
@@ -55,68 +71,53 @@ class SolicitudModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function obtenerSolicitudPorId($idSolicitud, $idUsuario) {
-        $sql = "SELECT id, id_informacion, titulo, tipo, datos, 
-                    fecha_creacion, estado, comentario_admin, fecha_revision 
-                FROM solicitudes 
-                WHERE id = ? AND id_informacion = ?";
+        // Método para obtener todas las solicitudes (para admin)
+    public function obtenerTodasSolicitudes($filtroEstado = null) {
+        $sql = "SELECT s.*, i.nombre as nombre_usuario 
+                FROM solicitudes s
+                JOIN informacion i ON s.id_informacion = i.id";
+        
+        if ($filtroEstado) {
+            $sql .= " WHERE s.estado = :estado";
+        }
+        
+        $sql .= " ORDER BY s.fecha_creacion DESC";
+        
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$idSolicitud, $idUsuario]);
+        
+        if ($filtroEstado) {
+            $stmt->bindValue(':estado', $filtroEstado);
+        }
+        
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Método para actualizar el estado de una solicitud (admin)
+    public function actualizarEstadoSolicitud($idSolicitud, $estado, $comentario = null) {
+        $sql = "UPDATE solicitudes 
+                SET estado = :estado, 
+                    comentario_admin = :comentario,
+                    fecha_revision = NOW()
+                WHERE id = :id";
+        
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':id' => $idSolicitud,
+            ':estado' => $estado,
+            ':comentario' => $comentario
+        ]);
+    }
+
+    // Método para obtener detalles de una solicitud
+    public function obtenerSolicitudPorId($idSolicitud) {
+        $sql = "SELECT s.*, i.nombre as nombre_usuario 
+                FROM solicitudes s
+                JOIN informacion i ON s.id_informacion = i.id
+                WHERE s.id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$idSolicitud]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    /* Obtener solicitudes por usuario
-    public function obtenerPorUsuario($idUsuario) {
-        $query = "SELECT * FROM solicitudes WHERE id_usuario = ? ORDER BY fecha_creacion DESC";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("i", $idUsuario);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }
-
-    public function crear($idUsuario, $tipo, $descripcion) {
-        $query = "SELECT * FROM solicitudes WHERE id = ? AND id_usuario = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $id, $idUsuario);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
-    }
-
-    public function obtenerPorUsuario($idUsuario, $filtro = 'todas') {
-        $query = "SELECT * FROM solicitudes WHERE id = ? AND id_usuario = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $id, $idUsuario);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
-    }
-
-    public function contarPorEstado($idUsuario, $estado) {
-        $query = "SELECT * FROM solicitudes WHERE id = ? AND id_usuario = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $id, $idUsuario);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
-    }
-
-    public function obtenerUltimas($idUsuario, $limite) {
-        $query = "SELECT * FROM solicitudes WHERE id = ? AND id_usuario = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $id, $idUsuario);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
-    }
-
-    public function obtenerPorId($id, $idUsuario) {
-        $query = "SELECT * FROM solicitudes WHERE id = ? AND id_usuario = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ii", $id, $idUsuario);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
-    }*/
 
 }

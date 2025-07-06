@@ -5,6 +5,7 @@ require_once 'model/Inicio.php';
 require_once 'model/contacto.php';
 require_once 'model/ProyectoModel.php';
 require_once 'model/config.php';
+require_once 'model/SolicitudModel.php';
 
 class AdminController 
 {
@@ -15,6 +16,7 @@ class AdminController
     public $categorias;
     public $model;
     private $config;
+    private $solicitudModel;
 
     public function __construct() 
     {
@@ -22,6 +24,7 @@ class AdminController
         $this->modelo = new Inventariado();
         $this->model = new ContactoModel();
         $this->config = new Configuracion();
+        $this->solicitudModel = new SolicitudModel($this->modeloDB);
     }
 
     /**
@@ -88,8 +91,7 @@ class AdminController
     /**
     * Registra un nuevo usuario en el sistema
     */
-    public function validarSolicitud()
-    {
+    public function validarSolicitud(){
         if(!isset($this->modeloDB))
         {
             $this->modeloDB = new BaseDatos();
@@ -419,29 +421,28 @@ class AdminController
     /**
     * Muestra el formulario para actualizar producto
     */
-    public function actualizar()
-{
-    $this->validarSesion();
-    
-    $id = $this->validarId($_GET['id'] ?? null);
-    if (!$id) {
-        $this->redirigirConError("inventario", "ID no válido");
-        return;
-    }
-
-    try {
-        $nombre = $_SESSION['nombre'];
-        $this->modelo = new Inventariado(); // Asegurar instancia
-        $datos = $this->modelo->actualizar($id);
+    public function actualizar(){
+        $this->validarSesion();
         
-        // Mantener como objetos MySQLi result
-        $categorias = $datos['categorias'];
-        $producto = $datos['productos'];
-        require 'views/inventario/actualizar.php';
-    } catch (Exception $e) {
-        $this->redirigirConError("inventario", "Error al cargar producto: " . $e->getMessage());
+        $id = $this->validarId($_GET['id'] ?? null);
+        if (!$id) {
+            $this->redirigirConError("inventario", "ID no válido");
+            return;
+        }
+
+        try {
+            $nombre = $_SESSION['nombre'];
+            $this->modelo = new Inventariado(); // Asegurar instancia
+            $datos = $this->modelo->actualizar($id);
+            
+            // Mantener como objetos MySQLi result
+            $categorias = $datos['categorias'];
+            $producto = $datos['productos'];
+            require 'views/inventario/actualizar.php';
+        } catch (Exception $e) {
+            $this->redirigirConError("inventario", "Error al cargar producto: " . $e->getMessage());
+        }
     }
-}
     public function actualizarSubir()
     {
         $this->actualizar();
@@ -868,6 +869,73 @@ private function eliminarProyecto($modelo) {
             }
         } catch (Exception $e) {
             $this->redirigirConError("contacto", $e->getMessage());
+        }
+    }
+ public function gestionSolicitudes() {
+        $this->validarSesion();
+        
+        $filtro = $_GET['filtro'] ?? null;
+        $solicitudes = $this->solicitudModel->obtenerTodasSolicitudes($filtro);
+        $title = "Gestión de Solicitudes";
+        
+        require_once 'views/admin/solicitudes/listado.php';
+    }
+
+    /**
+     * Muestra el detalle de una solicitud para aprobar/rechazar
+     */
+    public function detalleSolicitud() {
+        $this->validarSesion();
+
+        
+        $id = $this->validarId($_GET['id'] ?? null);
+        if (!$id) {
+            $this->redirigirConError("gestionSolicitudes", "ID no válido");
+        }
+        
+        $solicitud = $this->solicitudModel->obtenerSolicitudPorId($id);
+        if (!$solicitud) {
+            $this->redirigirConError("gestionSolicitudes", "Solicitud no encontrada");
+        }
+        
+        $title = "Solicitud #" . $solicitud['id'];
+        require_once 'views/admin/solicitudes/detalle.php';
+    }
+
+    /**
+     * Procesa la aprobación/rechazo de una solicitud
+     */
+    public function procesarSolicitud() {
+        $this->validarSesion();
+        
+        if (!$this->esMetodoPost()) {
+            $this->redirigirConError("gestionSolicitudes", "Método no permitido");
+        }
+        
+        $id = $this->validarId($_POST['id'] ?? null);
+        $accion = $_POST['accion'] ?? '';
+        $comentario = $_POST['comentario'] ?? null;
+        
+        if (!$id || !in_array($accion, ['aprobar', 'rechazar'])) {
+            $this->redirigirConError("gestionSolicitudes", "Datos inválidos");
+        }
+        
+        $estado = ($accion === 'aprobar') ? 'Aprobada' : 'Rechazada';
+        
+        try {
+            $resultado = $this->solicitudModel->actualizarEstadoSolicitud(
+                $id, 
+                $estado, 
+                $comentario
+            );
+            
+            if ($resultado) {
+                $this->redirigirConExito("gestionSolicitudes", "Solicitud {$estado} correctamente");
+            } else {
+                $this->redirigirConError("gestionSolicitudes", "Error al procesar solicitud");
+            }
+        } catch (Exception $e) {
+            $this->redirigirConError("gestionSolicitudes", $e->getMessage());
         }
     }
 
