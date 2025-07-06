@@ -7,17 +7,13 @@
     --hover-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 .modal-backdrop {
-    z-index: 9999999; /* ⚠️ No abuses de z-index */
+    z-index: 9999999; 
 }
 
 body.modal-open {
-    overflow: hidden !important; /* Esto puede causar scroll bloqueado */
+    overflow: hidden !important;
 }
 
-.main-content {
-    min-height: 100vh;
-    padding: 20px 0;
-}
 
 .container {
     max-width: 1400px;

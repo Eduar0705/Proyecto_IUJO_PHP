@@ -1,5 +1,4 @@
 <?php
-session_start();
 class BaseDatos {
 /*    private $db;
     public function __construct()
