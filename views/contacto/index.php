@@ -15,7 +15,6 @@
 
     <body>
     <?php 
-        $busqueda = isset($_GET['busqueda']) ? trim($_GET['busqueda']) : '';
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -40,9 +39,8 @@
                         <input type="hidden" name="action" value="admin">
                         <input type="hidden" name="method" value="contacto">
                         <div class="input-group">
-                            <input type="text" name="busqueda" class="form-control py-2" 
-                                    placeholder="Buscar por nombre, email o cargo..." 
-                                    value="<?= htmlspecialchars($busqueda) ?>">
+                            <input type="text" id="searchInput" class="form-control py-2" 
+                                    placeholder="Buscar por nombre, email o cargo...">
                             <button type="submit" class="btn btn-outline-secondary px-3">
                                 <i class="fas fa-search me-1"></i> Buscar
                             </button>
@@ -61,7 +59,7 @@
             <!-- Tabla de contactos -->
             <div class="table-container">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table class="table table-hover align-middle" id="tuTabla">
                         <thead class="table-light">
                             <tr>
                                 <th class="py-3">Nombre</th>
@@ -161,6 +159,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/menu.js"></script>
+    <script src="assets/js/busqueda.js" defer></script>
     <script>
         // Configuración del modal de eliminación
         const deleteModal = document.getElementById('deleteModal');
