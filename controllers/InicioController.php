@@ -26,6 +26,12 @@ class InicioController
         require_once 'views/home/index.php';
         require_once 'views/layout/footer.php';
     }
+    public function projects(){
+        $title = "Proyectos";
+        require_once 'views/layout/header.php';
+        require_once 'views/Noticias/index.php';
+        require_once 'views/layout/footer.php';
+    }
     public function login() {
         $title = "Iniciar Sesión";
         require_once 'views/auth/login.php';
