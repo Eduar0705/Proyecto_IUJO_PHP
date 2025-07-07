@@ -107,21 +107,6 @@
                 <i class="fas fa-clipboard-list me-2"></i>Detalles de Material de Oficina
             </h5>
             
-            <div class="sys-form-group">
-                <label class="sys-form-label">
-                    <i class="fas fa-list me-2"></i>Productos solicitados
-                    <span class="sys-required">*</span>
-                </label>
-                <textarea name="productos" 
-                        id="productos"
-                        class="sys-form-control" 
-                        rows="5" 
-                        placeholder="Lista detallada de productos necesarios:&#10;• Producto 1 - Cantidad - Especificaciones&#10;• Producto 2 - Cantidad - Especificaciones&#10;• ..." 
-                        required></textarea>
-                <div class="sys-form-help">
-                    Sea específico con cantidades, marcas preferidas y especificaciones técnicas
-                </div>
-            </div>
             
             <div class="sys-form-group">
                 <label class="sys-form-label">
@@ -140,6 +125,63 @@
             </div>
             
             <div class="sys-form-group">
+                <div class="sys-form-group">
+                <label class="sys-form-label">
+                    <i class="fas fa-shopping-cart me-2"></i>Productos solicitados
+                    <span class="sys-required">*</span>
+                </label>
+                
+                <div id="listaProductos" class="mb-3">
+                    <!-- Primer producto -->
+                    <div class="sys-product-item" data-index="0">
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <label class="form-label small">Nombre del producto</label>
+                                <input type="text" id="productos[0][nombre]"
+                                    name="productos[0][nombre]" 
+                                    class="sys-form-control" 
+                                    placeholder="Ej: Arroz blanco" 
+                                    required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small">Cantidad</label>
+                                <input type="number" 
+                                    name="productos[0][cantidad]" 
+                                    id="productos[0][cantidad]"
+                                    class="sys-form-control" 
+                                    min="0.1" 
+                                    step="0.1" 
+                                    placeholder="1.5" 
+                                    required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small">Unidad</label>
+                                <select name="productos[0][unidad]" id="productos[0][unidad]" class="sys-form-control" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="kg">Kilogramos (kg)</option>
+                                    <option value="g">Gramos (g)</option>
+                                    <option value="l">Litros (l)</option>
+                                    <option value="ml">Mililitros (ml)</option>
+                                    <option value="unidades">Unidades</option>
+                                    <option value="paquetes">Paquetes</option>
+                                    <option value="cajas">Cajas</option>
+                                    <option value="latas">Latas</option>
+                                    <option value="bolsas">Bolsas</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label small">&nbsp;</label>
+                                <button type="button" class="sys-remove-btn" disabled>
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="btnAgregarProducto" class="sys-add-product-btn">
+                    <i class="fas fa-plus me-2"></i>Agregar otro producto
+                </button>
                 <label class="sys-form-label">
                     <i class="fas fa-comment me-2"></i>Justificación de la solicitud
                 </label>

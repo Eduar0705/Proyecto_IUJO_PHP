@@ -13,7 +13,6 @@ class UsersController {
         }
             $this->modeloDB = new BaseDatos();
     $this->solicitudModel = new SolicitudModel($this->modeloDB->conectar());
-
     }
     public function home() {
         $this->modeloDB = new BaseDatos();
@@ -43,6 +42,7 @@ public function envioSolicitud() {
 
     $datosSolicitud = [
         'solicitante' => $_POST['nombre'],
+        'id_solicitante' => $_SESSION['id'],
         'titulo' => $_POST['titulo'],
         'tipo' => $_POST['tipoSolicitud'],
         'datos' => []
@@ -108,13 +108,20 @@ public function envioSolicitud() {
 }
 
     private function procesarSolicitudOficina() {
-        return [
-            'productos' => $_POST['productos'],
-            'urgencia' => $_POST['urgencia'],
-            'justificacion' => $_POST['justificacion']
-        ];
-    }
-
+            $productos = [];
+            if (isset($_POST['productos']) && is_array($_POST['productos'])) {
+                foreach ($_POST['productos'] as $producto) {
+                    $productos[] = [
+                        'producto' => filter_var($producto['nombre'], FILTER_SANITIZE_STRING),
+                        'cantidad' => floatval($producto['cantidad']),
+                        'unidad' => filter_var($producto['unidad'], FILTER_SANITIZE_STRING)
+                    ];
+                }
+                $productos['justificacion'] = $_POST['justificacion'];
+            }
+            $productos['urgencia'] = $_POST['urgencia'];
+            return $productos;
+}
     private function procesarSolicitudComida() {
     $productos = [];
     if (isset($_POST['productos']) && is_array($_POST['productos'])) {

@@ -225,7 +225,7 @@ class AdminController
      public function validarSolicitudProy()
     {
         $id = $_GET['id'];
-
+        $user_id = $_SESSION['id'];
         // Validamos que el ID exista y sea numérico
         if (!$id || !is_numeric($id)) {
             $_SESSION['mensaje'] = "ID inválido o no proporcionado";
@@ -254,16 +254,24 @@ class AdminController
             $conex = $this->modeloDB->conectar();
             switch($resultado['tipo'])
             {
-                case 'comida':
+                case 'comida' || 'oficina':
                     $datos = json_decode($resultado['datos'], true); // ← convierte a array asociativo
                     $comentarios = $datos['comentarios'] ?? '';
-
                     foreach ($datos as $key => $producto) {
                         if (is_numeric($key) && is_array($producto)) {
                             $nombre = $producto['producto'];
                             $unidad_medida = $producto['cantidad'] . ' ' . $producto['unidad'];
                             $descripcion = $comentarios;
-                            $this->agregarSolicitudProd($nombre, $unidad_medida, $descripcion, 2, $conex);
+                            if($resultado['tipo'] == 'comida')
+                            {
+                                $id_producto = 2;
+                                $this->agregarSolicitudProd($nombre, $unidad_medida, $descripcion, $id_producto, $conex);
+                            }
+                            else if($resultado['tipo'] == 'oficina')
+                            {
+                                $id_producto = 1;
+                                $this->agregarSolicitudProd($nombre, $unidad_medida, $descripcion, $id_producto, $conex);    
+                            }
                             $this->inventario();
                         }
                     }
@@ -309,6 +317,30 @@ class AdminController
             default: break;
         }
         $stmt->bind_param("sssss", $nombre, $descripcion, $prioridad, $fecha_registro, $fecha_fin);
+        $resultado = $stmt->execute();
+
+        if ($resultado) {
+                $mensaje = "Producto enviado. Nuevo producto registrado!";
+            $this->mostrarExito($mensaje);
+            $stmt->close();
+            return true;
+        } else {
+            $error = "Error al registrar producto: " . mysqli_error($db);
+            $this->mostrarError("Error al registrar producto: {$error}");
+            $stmt->close();
+            return false;
+        }
+    }
+    public function agregarSolicitudOfic($nombre, $unidad_medida, $descripcion, $id_producto, $db)
+    {
+        $consulta = "INSERT INTO productos (nombre, descripcion, cantegoria_id, unidad_medida, stock) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $db->prepare($consulta);
+        
+        if (!$stmt) {
+            throw new Exception("Error preparando inserción: " . mysqli_error($db));
+        }
+        $stock = 1;
+        $stmt->bind_param("sssss", $nombre, $descripcion, $id_producto, $unidad_medida, $stock);
         $resultado = $stmt->execute();
 
         if ($resultado) {

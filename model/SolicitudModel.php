@@ -24,19 +24,21 @@ class SolicitudModel {
             throw new Exception("Los datos específicos deben ser un array");
         }
         $sql = "INSERT INTO solicitudes (
-    solicitante,
-    titulo,
-    tipo,
-    datos,
-    fecha_creacion,
-    fecha_inminente
-) VALUES (
-    ?, ?, ?, ?, ?, ?
-)";
+        solicitante,
+        id_solicitante,
+        titulo,
+        tipo,
+        datos,
+        fecha_creacion,
+        fecha_inminente
+        ) VALUES (
+            ?, ?, ?, ?, ?, ?, ?
+        )";
       
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             $datos['solicitante'],
+            $datos['id_solicitante'],
             trim($datos['titulo']),
             $datos['tipo'],
             json_encode($datos['datos']),
