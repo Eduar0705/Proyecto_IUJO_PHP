@@ -56,8 +56,7 @@ $es_users = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 2;
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="?action=usuario&method=perfil"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="?action=usuario&method=logout"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
+                        <li><a class="dropdown-item" href="?action=inicio"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
                     </ul>
                 </div>
             </div>

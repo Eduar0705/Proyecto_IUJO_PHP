@@ -55,7 +55,7 @@
                                 </div>
                             <?php endif; ?>
 
-                            <form method="post" id="solicitudForm" class="sys-form">
+                            <form method="post" id="solicitudForm" action="?action=users&method=envioSolicitud" class="sys-form">
                                 <!-- Título común -->
                                 <div class="sys-form-group">
                                     <label class="sys-form-label">
@@ -108,10 +108,10 @@
                                     <a href="?action=users" class="sys-btn sys-btn--secondary">
                                         <i class="fas fa-times me-2"></i>Cancelar
                                     </a>
-                                    <button type="submit" class="sys-btn sys-btn--primary">
+                                </div>
+                                <button type="submit" class="sys-btn sys-btn--primary">
                                         <i class="fas fa-paper-plane me-2"></i>Enviar Solicitud
                                     </button>
-                                </div>
                             </form>
                         </div>
                     </div>

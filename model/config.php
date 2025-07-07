@@ -30,6 +30,16 @@ class Configuracion {
         
         return $resultado;
     }
+     public function buscarSolicitudProy() {
+        $sql = "SELECT * FROM solicitudes";
+        $resultado = $this->bd->query($sql);
+        
+        if ($resultado === false) {
+            throw new Exception("Error en la consulta: " . $this->bd->error);
+        }
+        
+        return $resultado;
+    }
     public function buscarSolicitud() {
         $sql = "SELECT * FROM solicitud_registro";
         $resultado = $this->bd->query($sql);

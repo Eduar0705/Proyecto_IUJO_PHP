@@ -9,7 +9,7 @@ class SolicitudModel {
 
     public function crearSolicitud($datos) {
         // Validar campos obligatorios
-        if (empty($datos['id_usuario']) || empty($datos['titulo']) || empty($datos['tipo'])) {
+        if (empty($datos['solicitante']) || empty($datos['titulo']) || empty($datos['tipo'])) {
             throw new Exception("Datos incompletos para crear la solicitud");
         }
         
@@ -23,20 +23,27 @@ class SolicitudModel {
         if (!is_array($datos['datos'])) {
             throw new Exception("Los datos específicos deben ser un array");
         }
-        
-        $sql = "INSERT INTO solicitudes 
-                (id_informacion, titulo, tipo, datos, fecha_creacion, estado) 
-                VALUES 
-                (:id_informacion, :titulo, :tipo, :datos, NOW(), :estado)";
-        
+        $sql = "INSERT INTO solicitudes (
+    solicitante,
+    titulo,
+    tipo,
+    datos,
+    fecha_creacion,
+    fecha_inminente
+) VALUES (
+    ?, ?, ?, ?, ?, ?
+)";
+      
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            ':id_informacion' => (int)$datos['id_usuario'],
-            ':titulo' => trim($datos['titulo']),
-            ':tipo' => $datos['tipo'],
-            ':datos' => json_encode($datos['datos']),
-            ':estado' => 'Pendiente'
+            $datos['solicitante'],
+            trim($datos['titulo']),
+            $datos['tipo'],
+            json_encode($datos['datos']),
+            date('Y-m-d H:i:s'),
+            $datos['fecha_limite']
         ]);
+
     }
 
     public function contarSolicitudesPorEstado($idUsuario, $estado) {

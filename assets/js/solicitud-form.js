@@ -24,12 +24,38 @@
     // Listener para cambio de tipo de solicitud
     document.getElementById("tipoSolicitud").addEventListener("change", handleTipoChange)
 
-    // Listener para envío del formulario
-    document.getElementById("solicitudForm").addEventListener("submit", handleFormSubmit)
-
     // Listener para teclas de acceso rápido
     document.addEventListener("keydown", handleKeyboardShortcuts)
     }
+    document.getElementById('solicitudForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    showLoadingOverlay();
+
+    const formData = new FormData(this);
+
+    try {
+        const response = await fetch(this.action, {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            window.location.href = result.redirect;
+        } else {
+            showErrorMessage(result.message || "Error al enviar la solicitud");
+        }
+    } catch (error) {
+        showErrorMessage("Error de conexión con el servidor");
+    } finally {
+        hideLoadingOverlay();
+    }
+});
+
 
     // ===== MANEJO DE TIPOS DE SOLICITUD =====
     function handleTipoChange() {
@@ -104,7 +130,7 @@
                 </label>
                 <select name="urgencia" id="urgencia" class="sys-form-control sys-form-control--lg" required>
                     <option value="">Seleccione el nivel de urgencia...</option>
-                    <option value="normal">🟢 Normal (entrega en 5-7 días hábiles)</option>
+                    <option value="normal">🟢 Normal (entrega en alrededor de 7 días hábiles)</option>
                     <option value="urgente">🟡 Urgente (entrega en 48 horas)</option>
                     <option value="muy_urgente">🔴 Muy urgente (entrega en 24 horas)</option>
                 </select>
@@ -212,7 +238,7 @@
                             <span class="sys-required">*</span>
                         </label>
                         <input type="date" 
-                            name="fecha_entrega" id="fecha_entrega"
+                            name="fecha_limite" id="fecha_limite"
                             class="sys-form-control sys-form-control--lg" 
                             required>
                         <div class="sys-form-help">
@@ -483,22 +509,7 @@
     }
 
     // ===== MANEJO DEL FORMULARIO =====
-    function handleFormSubmit(e) {
-    e.preventDefault()
-
-    if (validateForm()) {
-        showLoadingOverlay()
-
-        // Simular envío (reemplazar con lógica real)
-        setTimeout(() => {
-        // Aquí iría la lógica real de envío
-        console.log("Formulario enviado")
-        hideLoadingOverlay()
-        showSuccessMessage()
-        }, 2000)
-    }
-    }
-
+    
     function validateForm() {
     const form = document.getElementById("solicitudForm")
     const isValid = form.checkValidity()
@@ -511,7 +522,7 @@
 
     return true
     }
-
+    
     // ===== UTILIDADES UI =====
     function showLoadingOverlay() {
     document.getElementById("loadingOverlay").style.display = "flex"
@@ -544,10 +555,7 @@
     // ===== ATAJOS DE TECLADO =====
     function handleKeyboardShortcuts(e) {
     // Ctrl + Enter para enviar formulario
-    if (e.ctrlKey && e.key === "Enter") {
-        e.preventDefault()
-        document.getElementById("solicitudForm").dispatchEvent(new Event("submit"))
-    }
+
 
     // Escape para cancelar
     if (e.key === "Escape") {

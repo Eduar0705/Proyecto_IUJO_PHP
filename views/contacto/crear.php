@@ -6,9 +6,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="menu.css">
-    <link rel="stylesheet" href="assets/css/contacto.css">
+    <link rel="stylesheet" href="assets/css/contacto2.css">
     <link rel="shortcut icon" href="assets/img/Logo1.png" type="image/x-icon">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
     <?php
@@ -31,13 +32,6 @@
     <main class="main-content">
         <div class="form-centered-container">
             <h2 class="form-title"><i class="fa-solid fa-address-card"></i> Crear Nuevo Contacto</h2>
-            
-            <?php if (isset($error)): ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Error!</strong> <?= $error ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
 
             <form method="POST" class="centered-form" id="contactForm">
                 <input type="hidden" name="action" value="admin">  
@@ -64,101 +58,100 @@
                 </div>
                 
                 <div class="d-flex justify-content-end gap-3 mt-5">
-                    <a href="?action=admin&method=contacto" class="btn btn-cancel btn-action">
+                    <button type="button" class="btn btn-cancel btn-action" id="btnCancelar">
                         <i class="fa-solid fa-xmark"></i> Cancelar
-                    </a>
-                    <button type="button" class="btn btn-save btn-action" data-bs-toggle="modal" data-bs-target="#confirmationModal">
+                    </button>
+                    <button type="submit" class="btn btn-save btn-action" id="btnGuardar">
                         <i class="fa-solid fa-floppy-disk"></i> Guardar
                     </button>
                 </div>
             </form>
         </div>
     </main>
-    
-    <!-- Modal de Confirmación -->
-    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-light">
-                    <h5 class="modal-title" id="confirmationModalLabel"><i class="fas fa-check-circle me-2 text-success"></i> Confirmar Creación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="bg-light p-3 rounded-circle me-3">
-                            <i class="fas fa-user-plus fa-2x text-primary"></i>
-                        </div>
-                        <div>
-                            <h5 class="mb-1">¿Crear nuevo contacto?</h5>
-                            <p class="mb-0 text-muted">Confirma que deseas agregar este contacto al sistema</p>
-                        </div>
-                    </div>
-                    <div class="alert alert-info mb-0">
-                        <i class="fas fa-info-circle me-2"></i> Verifica que toda la información sea correcta antes de continuar
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i> Cancelar
-                    </button>
-                    <button type="button" class="btn btn-primary" id="confirmSave">
-                        <i class="fas fa-check me-1"></i> Confirmar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal de Éxito -->
-    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="successModalLabel"><i class="fas fa-check-circle me-2"></i> Contacto Creado</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center py-4">
-                    <div class="mb-3">
-                        <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
-                        <h4 class="mb-2">¡Contacto creado con éxito!</h4>
-                        <p class="text-muted">El nuevo contacto ha sido agregado al sistema</p>
-                    </div>
-                    <div class="d-grid">
-                        <button type="button" class="btn btn-outline-light text-dark" data-bs-dismiss="modal">
-                            <i class="fas fa-eye me-1"></i> Ver Contactos
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/js/menu.js"></script>
     <script>
-        // Confirmar creación del contacto
-        document.getElementById('confirmSave').addEventListener('click', function() {
-            // Cerrar el modal de confirmación
-            var confirmationModal = bootstrap.Modal.getInstance(document.getElementById('confirmationModal'));
-            confirmationModal.hide();
+        // Mostrar alerta de error si existe
+        <?php if (isset($error)): ?>
+            Swal.fire({
+                title: 'Error',
+                text: '<?= addslashes($error) ?>',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        <?php endif; ?>
+
+        // Confirmación al guardar
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            // Envía el formulario
-            document.getElementById('contactForm').submit();
-            
-            // Mostrar modal de éxito (simulación)
-            // En un caso real, esto debería mostrarse después de una respuesta exitosa del servidor
-            setTimeout(function() {
-                var successModal = new bootstrap.Modal(document.getElementById('successModal'));
-                successModal.show();
-            }, 800);
+            Swal.fire({
+                title: '¿Crear nuevo contacto?',
+                html: `Confirma que deseas agregar este contacto al sistema<br><br>
+                       <div class="alert alert-info p-2 text-start">
+                           <i class="fas fa-info-circle me-2"></i> Verifica que toda la información sea correcta antes de continuar
+                       </div>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '<i class="fas fa-check me-1"></i> Confirmar',
+                cancelButtonText: '<i class="fas fa-times me-1"></i> Cancelar',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'text-start'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Si confirma, enviar el formulario
+                    this.submit();
+                }
+            });
         });
-        
-        // Simulación de creación exitosa - para propósitos de demostración
+
+        // Confirmación al cancelar
+        document.getElementById('btnCancelar').addEventListener('click', function() {
+            Swal.fire({
+                title: '¿Cancelar cambios?',
+                text: "¿Estás seguro de que deseas cancelar? Los datos ingresados se perderán.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'Continuar editando',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '?action=admin&method=contacto';
+                }
+            });
+        });
+
+        // Mostrar alerta de éxito si existe
         <?php if(isset($success) && $success): ?>
-            document.addEventListener('DOMContentLoaded', function() {
-                var successModal = new bootstrap.Modal(document.getElementById('successModal'));
-                successModal.show();
+            Swal.fire({
+                title: '¡Contacto creado!',
+                html: `<div class="text-center">
+                            <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                            <h3 class="mb-2">¡Contacto creado con éxito!</h3>
+                            <p class="text-muted mb-3">El nuevo contacto ha sido agregado al sistema</p>
+                        </div>`,
+                icon: 'success',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-eye me-1"></i> Ver Contactos',
+                cancelButtonText: '<i class="fas fa-times me-1"></i> Cerrar',
+                reverseButtons: true,
+                focusConfirm: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '?action=admin&method=contacto';
+                }
             });
         <?php endif; ?>
     </script>

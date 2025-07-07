@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="assets/css/inventario2.css">
     <link rel="shortcut icon" href="assets/img/Logo1.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <?php
 if (session_status() === PHP_SESSION_NONE) {
@@ -28,13 +30,10 @@ if (session_status() === PHP_SESSION_NONE) {
         <div class="form-centered-container">
             <h2 class="form-title"><i class="fa-solid fa-plus"></i> Crear Nuevo Producto</h2>
             
-            <?php if (isset($error)): ?>
-                <div class="alert alert-danger"><?= $error ?></div>
-            <?php endif; ?>
-
-            <form method="POST" class="centered-form">
-            <input type="hidden" name="action" value="admin">  
-            <input type="hidden" name="method" value="crear">
+            <form method="POST" class="centered-form" id="form-producto">
+                <input type="hidden" name="action" value="admin">  
+                <input type="hidden" name="method" value="crear">
+                
                 <div class="form-group">
                     <label>Nombre</label>
                     <input type="text" name="nombre" class="form-control" required>
@@ -72,13 +71,76 @@ if (session_status() === PHP_SESSION_NONE) {
                 </div>
                 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-save"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
-                    <a href="?action=admin&method=inventario" class="btn btn-cancel"><i class="fa-solid fa-xmark"></i> Cancelar</a>
+                    <button type="submit" class="btn btn-save" id="btn-guardar">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar
+                    </button>
+                    <button type="button" class="btn btn-cancel" id="btn-cancelar">
+                        <i class="fa-solid fa-xmark"></i> Cancelar
+                    </button>
                 </div>
             </form>
         </div>
     </main>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="assets/js/menu.js"></script>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/js/menu.js"></script>
+    
+    <script>
+    // Mostrar alerta de error si existe
+    <?php if (isset($error)): ?>
+        Swal.fire({
+            title: 'Error',
+            text: '<?= addslashes($error) ?>',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    <?php endif; ?>
+
+    // Confirmación al guardar
+    document.getElementById('form-producto').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        Swal.fire({
+            title: '¿Guardar producto?',
+            text: "¿Estás seguro de que deseas guardar este nuevo producto?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Si confirma, enviar el formulario
+                this.submit();
+                setTimeout(() => {
+                    window.location.href = '?action=admin&method=inventario';
+                }, 1500);
+            }
+        });
+    });
+
+    // Confirmación al cancelar
+    document.getElementById('btn-cancelar').addEventListener('click', function() {
+        Swal.fire({
+            title: '¿Cancelar operación?',
+            text: "¿Estás seguro de que deseas cancelar? Los cambios no guardados se perderán.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'Continuar editando',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '?action=admin&method=inventario';
+            }
+        });
+    });
+    </script>
 </body>
 </html>

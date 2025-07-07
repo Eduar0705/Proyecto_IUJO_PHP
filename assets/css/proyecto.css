@@ -250,37 +250,80 @@
             font-weight: 600;
         }
                 
-        .btn {
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-            box-shadow: 0 4px 6px rgba(255, 77, 77, 0.3);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-align: center;
-        }
-        
-        .btn:hover {
-            background: linear-gradient(to right, #ff3333, #ffa726);
-            box-shadow: 0 6px 10px rgba(255, 77, 77, 0.4);
-            transform: translateY(-2px);
-        }
-        
-        .btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 4px rgba(255, 77, 77, 0.3);
-        }
+  /* Reemplaza la sección actual de .btn con esto: */
 
+.btn {
+    background-color: white;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    box-shadow: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilos específicos para botones de diferentes colores */
+.btn-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-warning {
+    color: #ffc107;
+    border-color: #ffc107;
+}
+
+.btn-warning:hover {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-success {
+    color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-info {
+    color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+.btn-info:hover {
+    background-color: #17a2b8;
+    color: white;
+}
         /* Formulario de registro mejorado */
         .form-container {
             background-color: white;
@@ -367,7 +410,6 @@
             font-weight: 700;
             border-radius: 10px;
             letter-spacing: 1.5px;
-            text-align: center;
         }
 
         

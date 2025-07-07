@@ -42,38 +42,37 @@
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>
-                                        <th>Descripción</th>
-                                        <th>Fecha de Solicitud</th>
+                                        <th>Solicitante</th>
+                                        <th>Titulo de solicitud</th>
+                                        <th>Tipo</th>
+                                        <th>Fecha de creacion</th>
+                                        <th>Fecha limite</th>
                                         <th>Estado</th>
                                         <th class="text-center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <?php while ($fila = $res->fetch_assoc()): ?>
                                     <tr>
-                                        <td class="fw-semibold">Mark Johnson</td>
-                                        <td class="text-muted">Solicitud de acceso al sistema</td>
-                                        <td class="text-muted">
-                                            <i class="bi bi-calendar3 me-2"></i>10/05/2023
-                                        </td>
+                                        <td><?php echo htmlspecialchars($fila['id_informacion'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($fila['solicitante'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($fila['titulo'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($fila['tipo'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($fila['fecha_creacion'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars(($fila['fecha_inminente'] ?? '')); ?></td>
+                                        <td><?php echo htmlspecialchars(($fila['estado'] ?? '')); ?></td>
                                         <td>
-                                            <span class="badge bg-warning text-dark">
-                                                <i class="bi bi-clock me-1"></i>Pendiente
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="action-buttons">
-                                                <button type="button" class="btn btn-action btn-view" title="Ver detalles">
-                                                    <i class="bi bi-eye"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-action btn-edit" title="Editar">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-action btn-delete" title="Eliminar">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </div>
+                                            <a href="?action=admin&method=validarSolicitudProy&id=<?php echo $fila['id_informacion']; ?>" 
+                                                class=" btn btn-success" onclick="confirmarAgregacion(event, this.href)">
+                                                <i class="bi bi-check"></i>
+                                            </a>
+                                            <a href="?action=admin&method=eliminarSolicitudProy&id=<?php echo $fila['id_informacion']; ?>" 
+                                                class=" btn btn-danger btn-sm" onclick="confirmarEliminacion(event, this.href)">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
                                         </td>
                                     </tr>
+                                <?php endwhile; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -93,8 +92,46 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/menu.js"></script>
-    
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
+        // Función para confirmar eliminación
+        function confirmarEliminacion(event, url) {
+            
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esta acción!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        }
+        function confirmarAgregacion(event, url) {
+            event.preventDefault(); 
+            
+            Swal.fire({
+                title: '¿Enviar la solicitud a presupuesto?',
+                text: "¡Debes estar seguro de que vale la pena!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, Aceptar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        }
         // Efecto hover para los botones de acción
         $(document).ready(function() {
             $('.action-buttons .btn').hover(

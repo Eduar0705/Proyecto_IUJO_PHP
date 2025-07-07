@@ -29,37 +29,41 @@ class UsersController {
         eval($this->envioSolicitud());
     }
 public function envioSolicitud() {
-    // Verificar si es una petición POST
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        header('HTTP/1.1 405 Method Not Allowed');
-        exit('Método no permitido');
-    }
 
-    // Verificar sesión y obtener ID de usuario
-    if (!isset($_SESSION['id_usuario'])) {
-        header('HTTP/1.1 401 Unauthorized');
-        exit('Usuario no autenticado');
-    }
-
-    // Inicializar el modelo de solicitud
     $this->solicitudModel = new SolicitudModel($this->modeloDB->conectar());
 
-    // Recoger y sanitizar datos básicos
-    $datosSolicitud = [
-        'id_usuario' => $_SESSION['id_usuario'],
-        'titulo' => filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING), // Cambiado
-        'tipo' => filter_input(INPUT_POST, 'tipo', FILTER_SANITIZE_STRING), // Cambiado
-        'datos' => []
-    ];
-
-    // Validar campos obligatorios
-    if (empty($datosSolicitud['titulo']) || empty($datosSolicitud['tipo'])) {
-        $_SESSION['error'] = 'El título y el tipo de solicitud son obligatorios';
-        header('Location: ' . $_SERVER['HTTP_REFERER']);
+    // Validar existencia de campos
+    if (!isset($_POST['nombre'], $_POST['titulo'], $_POST['tipoSolicitud'])) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Faltan campos obligatorios'
+        ]);
         exit;
     }
 
-    // Procesar datos según el tipo de solicitud
+    $datosSolicitud = [
+        'solicitante' => $_POST['nombre'],
+        'titulo' => $_POST['titulo'],
+        'tipo' => $_POST['tipoSolicitud'],
+        'datos' => []
+    ];
+
+    // Calcular fecha límite
+    if ($datosSolicitud['tipo'] !== 'oficina') {
+        $datosSolicitud['fecha_limite'] = $_POST['fecha_limite'] ?? null;
+    } else {
+        $urgencia = $_POST['urgencia'] ?? 'normal';
+        $fecha = new DateTime();
+
+        switch ($urgencia) {
+            case 'urgente': $fecha->modify('+2 days'); break;
+            case 'muy_urgente': $fecha->modify('+1 days'); break;
+            default: $fecha->modify('+10 days');
+        }
+        $datosSolicitud['fecha_limite'] = $fecha->format('Y-m-d');
+    }
+
+    // Procesar tipo
     switch ($datosSolicitud['tipo']) {
         case 'oficina':
             $datosSolicitud['datos'] = $this->procesarSolicitudOficina();
@@ -71,79 +75,70 @@ public function envioSolicitud() {
             $datosSolicitud['datos'] = $this->procesarSolicitudProyecto();
             break;
         default:
-            $_SESSION['error'] = 'Tipo de solicitud no válido';
-            header('Location: ' . $_SERVER['HTTP_REFERER']);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Tipo de solicitud no válido'
+            ]);
             exit;
     }
 
-    // Intentar crear la solicitud
+    // Guardar
     try {
         $resultado = $this->solicitudModel->crearSolicitud($datosSolicitud);
-        
+
         if ($resultado) {
-            $_SESSION['exito'] = 'Solicitud creada correctamente';
-            header('Location: /tu_ruta_de_exito');
+            echo json_encode([
+                'success' => true,
+                'redirect' => '?action=users&method=nuevaSolicitud'
+            ]);
         } else {
-            $_SESSION['error'] = 'Error al crear la solicitud';
-            header('Location: ' . $_SERVER['HTTP_REFERER']);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error al crear la solicitud'
+            ]);
         }
     } catch (Exception $e) {
-        $_SESSION['error'] = 'Error: ' . $e->getMessage();
-        header('Location: ' . $_SERVER['HTTP_REFERER']);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Excepción: ' . $e->getMessage()
+        ]);
     }
+
     exit;
 }
 
     private function procesarSolicitudOficina() {
-        $productos = [];
-        if (isset($_POST['productos']) && is_array($_POST['productos'])) {
-            foreach ($_POST['productos'] as $producto) {
-                $productos[] = [
-                    'nombre' => $producto['nombre'],
-                    'cantidad' => $producto['cantidad'],
-                    'especificaciones' => $producto['especificaciones']
-                ];
-            }
-        }
-
         return [
-            'solicitante' => 'nombre_solicitante',
-            'productos' => $productos,
-            'urgencia' => 'urgencia',
-            'justificacion' => 'justificacion'
+            'productos' => $_POST['productos'],
+            'urgencia' => $_POST['urgencia'],
+            'justificacion' => $_POST['justificacion']
         ];
     }
 
     private function procesarSolicitudComida() {
-        $productos = [];
-        if (isset($_POST['productos']) && is_array($_POST['productos'])) {
-            foreach ($_POST['productos'] as $producto) {
-                $productos[] = [
-                    'nombre' => $producto['nombre'],
-                    'cantidad' => $producto['cantidad'],
-                    'unidad' => $producto['unidad']
-                ];
-            }
+    $productos = [];
+    if (isset($_POST['productos']) && is_array($_POST['productos'])) {
+        foreach ($_POST['productos'] as $producto) {
+            $productos[] = [
+                'producto' => filter_var($producto['nombre'], FILTER_SANITIZE_STRING),
+                'cantidad' => floatval($producto['cantidad']),
+                'unidad' => filter_var($producto['unidad'], FILTER_SANITIZE_STRING)
+            ];
         }
-
-        return [
-            'solicitante' => 'nombre_solicitante',
-            'productos' => $productos,
-            'fecha_entrega' => 'fecha_entrega',
-            'comentarios' => 'comentarios',
-            'hora_entrega' => 'hora_entrega'
-        ];
+        $productos['comentarios'] = $_POST['comentarios'];
     }
+
+    return $productos;
+}
+
 
     private function procesarSolicitudProyecto() {
         return [
-            'solicitante' =>'nombre_solicitante', 
-            'nombre_proyecto' => 'nombre_proyecto', 
-            'fecha_limite' => 'fecha_limite', 
-            'presupuesto' => 'presupuesto', 
-            'descripcion' => 'descripcion', 
-            'recursos' => isset($_POST['recursos']) ? array_map('filter_var', $_POST['recursos']) : [],
-            'prioridad' => 'prioridad', 
+            'nombre_proyecto' => $_POST['nombre_proyecto'], 
+            'presupuesto' => $_POST['presupuesto'], 
+            'descripcion' => $_POST['descripcion_proyecto'], 
+            'recursos' => $_POST['recursos'],
+            'prioridad' => $_POST['prioridad']
         ];
     }
 }

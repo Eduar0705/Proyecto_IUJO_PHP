@@ -222,7 +222,170 @@ class AdminController
         // Tiempo de procesamiento en PHP (simulado)
         sleep($duracion);
     }
+     public function validarSolicitudProy()
+    {
+        $id = $_GET['id'];
 
+        // Validamos que el ID exista y sea numérico
+        if (!$id || !is_numeric($id)) {
+            $_SESSION['mensaje'] = "ID inválido o no proporcionado";
+            $_SESSION['tipo_mensaje'] = "danger";
+            header("Location: ?action=admin&method=solicitudes");
+            exit;
+        }
+
+        try {
+            if(!isset($this->modeloDB)){
+                $this->modeloDB = new BaseDatos();
+            }
+            
+            $sql = "SELECT * FROM solicitudes WHERE id_informacion = ?";
+            $conex = $this->modeloDB->conectar();
+            $stmt = $conex->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $resultado = $stmt->get_result()->fetch_assoc();
+        } catch (Exception $e) {
+            $_SESSION['mensaje'] = "Error al eliminar la solicitud: " . $e->getMessage();
+            $_SESSION['tipo_mensaje'] = "danger";
+        }
+        if($resultado)
+        {
+            $conex = $this->modeloDB->conectar();
+            switch($resultado['tipo'])
+            {
+                case 'comida':
+                    $datos = json_decode($resultado['datos'], true); // ← convierte a array asociativo
+                    $comentarios = $datos['comentarios'] ?? '';
+
+                    foreach ($datos as $key => $producto) {
+                        if (is_numeric($key) && is_array($producto)) {
+                            $nombre = $producto['producto'];
+                            $unidad_medida = $producto['cantidad'] . ' ' . $producto['unidad'];
+                            $descripcion = $comentarios;
+                            $this->agregarSolicitudProd($nombre, $unidad_medida, $descripcion, 2, $conex);
+                            $this->inventario();
+                        }
+                    }
+                    break;
+                case 'proyecto':
+                    $datos = json_decode($resultado['datos'], true);
+                    $nombre = $datos['nombre_proyecto'] . ' (' . $datos['presupuesto'] . '$)';
+                    $prioridad = $datos['prioridad'];
+                    $descripcion = $datos['descripcion'];
+                    $fecha_registro = $resultado['fecha_creacion'];
+                    $fecha_fin = $resultado['fecha_inminente'];
+                    $this->agregarSolicitudProy($nombre, $descripcion, $prioridad, $fecha_registro, $fecha_fin, $conex);
+                    $this->proyectos();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    public function agregarSolicitudProy($nombre, $descripcion, $prioridad, $fecha_registro, $fecha_fin, $db)
+    {
+        $consulta = "INSERT INTO proyectos(nombre, descripcion, estado, fecha_inicio, fecha_fin) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $db->prepare($consulta);
+        
+        if (!$stmt) {
+            throw new Exception("Error preparando inserción: " . mysqli_error($db));
+        }
+        $stock = 1;
+        switch($prioridad)
+        {
+            case 'baja':
+                $prioridad = 'planificado';
+                break;
+            case 'media':
+                $prioridad = 'planificado';
+                break;
+            case 'alta':
+                $prioridad = 'en progreso';
+                break;
+            case 'critica':
+                $prioridad = 'en progreso';
+                break;
+            default: break;
+        }
+        $stmt->bind_param("sssss", $nombre, $descripcion, $prioridad, $fecha_registro, $fecha_fin);
+        $resultado = $stmt->execute();
+
+        if ($resultado) {
+                $mensaje = "Producto enviado. Nuevo producto registrado!";
+            $this->mostrarExito($mensaje);
+            $stmt->close();
+            return true;
+        } else {
+            $error = "Error al registrar producto: " . mysqli_error($db);
+            $this->mostrarError("Error al registrar producto: {$error}");
+            $stmt->close();
+            return false;
+        }
+    }
+    public function agregarSolicitudProd($nombre, $unidad_medida, $descripcion, $id_producto, $db)
+    {
+        $consulta = "INSERT INTO productos (nombre, descripcion, cantegoria_id, unidad_medida, stock) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $db->prepare($consulta);
+        
+        if (!$stmt) {
+            throw new Exception("Error preparando inserción: " . mysqli_error($db));
+        }
+        $stock = 1;
+        $stmt->bind_param("sssss", $nombre, $descripcion, $id_producto, $unidad_medida, $stock);
+        $resultado = $stmt->execute();
+
+        if ($resultado) {
+                $mensaje = "Producto enviado. Nuevo producto registrado!";
+            $this->mostrarExito($mensaje);
+            $stmt->close();
+            return true;
+        } else {
+            $error = "Error al registrar producto: " . mysqli_error($db);
+            $this->mostrarError("Error al registrar producto: {$error}");
+            $stmt->close();
+            return false;
+        }
+    }
+    public function eliminarSolicitudProy() {
+            $id = $_GET['id'];
+
+        // Validamos que el ID exista y sea numérico
+        if (!$id || !is_numeric($id)) {
+            $_SESSION['mensaje'] = "ID inválido o no proporcionado";
+            $_SESSION['tipo_mensaje'] = "danger";
+            header("Location: ?action=admin&method=solicitudes");
+            exit;
+        }
+
+        try {
+            if(!isset($this->modeloDB)){
+                $this->modeloDB = new BaseDatos();
+            }
+            
+            $sql = "DELETE FROM solicitudes WHERE id_informacion = ?";
+            $conex = $this->modeloDB->conectar();
+            $stmt = $conex->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            
+            if($stmt->affected_rows > 0) {
+                $_SESSION['mensaje'] = "Solicitud eliminada correctamente";
+                $_SESSION['tipo_mensaje'] = "success";
+            } else {
+                $_SESSION['mensaje'] = "No se encontró la solicitud con ID $id";
+                $_SESSION['tipo_mensaje'] = "warning";
+            }
+            
+            $stmt->close();
+        } catch (Exception $e) {
+            $_SESSION['mensaje'] = "Error al eliminar la solicitud: " . $e->getMessage();
+            $_SESSION['tipo_mensaje'] = "danger";
+        }
+        
+        header("Location: ?action=admin&method=solicitudes");
+        exit;
+    }
     public function eliminarSolicitud($id = null) {
         // Si no recibe el parámetro directamente, lo obtenemos de $_GET
         if ($id === null) {
@@ -577,7 +740,8 @@ class AdminController
         $categoria_id = $_GET['categoria_id'] ?? '';
         $nombre = $_SESSION['nombre'];
         $title = "Solicitudes";
-        
+        $res = $this->config->buscarSolicitudProy();
+
         require_once 'views/solicitudes/index.php';
     }
 
@@ -871,7 +1035,7 @@ private function eliminarProyecto($modelo) {
             $this->redirigirConError("contacto", $e->getMessage());
         }
     }
- public function gestionSolicitudes() {
+    public function gestionSolicitudes() {
         $this->validarSesion();
         
         $filtro = $_GET['filtro'] ?? null;
