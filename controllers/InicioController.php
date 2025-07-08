@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../model/Conexion.php';
+require_once './model/Conexion.php';
 require_once __DIR__ . '/../model/Inicio.php';
 class InicioController
 {
@@ -26,9 +26,14 @@ class InicioController
         require_once 'views/home/index.php';
         require_once 'views/layout/footer.php';
     }
+    public function projects(){
+        $title = "Proyectos";
+        require_once 'views/layout/header.php';
+        require_once 'views/Noticias/index.php';
+        require_once 'views/layout/footer.php';
+    }
     public function login() {
         $title = "Iniciar Sesión";
-        $hideCarousel = true; //Esto no esta haciendo nada??
         require_once 'views/auth/login.php';
     }
     public function loginAuthenticate() {
@@ -57,7 +62,7 @@ class InicioController
                 $this->modelo->registerStore($names, $usuario, $cedula, $email, $password, $base_datos);
             }
             else {
-                echo "<script>alert('Por favor, coloque la misma contraseña en ambos campos.');</script>";
+                $this->mostrarError("Por favor, coloque la misma contraseña en ambos campos.");
             }
             $this->register();
         }
@@ -81,7 +86,6 @@ class InicioController
             exit();
         }
     }
-
     public function verifyToken() {
         $title = "Verificar Código";
         
@@ -132,5 +136,66 @@ class InicioController
         
         header("Location: ?action=inicio&method=resetPassword");
         exit();
+    }
+    private function mostrarError($mensaje, $tipo = 'error') 
+    {
+        // Tipos soportados y sus correspondientes estilos Bootstrap
+        $tiposPermitidos = [
+            'error' => ['color' => 'danger', 'icon' => 'exclamation-triangle-fill', 'title' => 'Error'],
+            'success' => ['color' => 'success', 'icon' => 'check-circle-fill', 'title' => 'Éxito'],
+            'warning' => ['color' => 'warning', 'icon' => 'exclamation-triangle-fill', 'title' => 'Advertencia'],
+            'info' => ['color' => 'info', 'icon' => 'info-circle-fill', 'title' => 'Información'],
+            'question' => ['color' => 'primary', 'icon' => 'question-circle-fill', 'title' => 'Confirmación']
+        ];
+        
+        // Validar y establecer tipo por defecto
+        $tipo = array_key_exists(strtolower($tipo), $tiposPermitidos) ? strtolower($tipo) : 'error';
+        $config = $tiposPermitidos[$tipo];
+        
+        echo "
+        <!-- Bootstrap CSS -->
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
+        <!-- Bootstrap Icons -->
+        <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'>
+        <!-- Bootstrap JS Bundle con Popper -->
+        <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
+
+        <div class='position-fixed top-0 end-0 p-3' style='z-index: 1100'>
+            <div id='alertToast' class='toast show' role='alert' aria-live='assertive' aria-atomic='true' data-bs-delay='5000'>
+                <div class='toast-header bg-{$config['color']} text-white'>
+                    <i class='bi bi-{$config['icon']} me-2'></i>
+                    <strong class='me-auto'>{$config['title']}</strong>
+                    <button type='button' class='btn-close btn-close-white' data-bs-dismiss='toast' aria-label='Close'></button>
+                </div>
+                <div class='toast-body'>
+                    {$mensaje}
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var toastEl = document.getElementById('alertToast');
+                var toast = new bootstrap.Toast(toastEl, {
+                    autohide: true,
+                    delay: 5000
+                });
+                toast.show();
+                
+                // Pausar cuando el mouse entra
+                toastEl.addEventListener('mouseenter', function() {
+                    toast._config.autohide = false;
+                    toast._clearTimeout();
+                });
+                
+                // Reanudar cuando el mouse sale
+                toastEl.addEventListener('mouseleave', function() {
+                    toast._config.autohide = true;
+                    toast._config.delay = 3000; // Tiempo restante reducido
+                    toast._setTimeout();
+                });
+            });
+        </script>
+        ";
     }
 }

@@ -7,8 +7,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="assets/css/proyecto.css">
     <link rel="icon" href="assets/img/Logo1.png" type="image/x-icon">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
     <header class="admin-header">
@@ -21,21 +23,6 @@
     <main class="main-content">
 <div class="container mt-4">
     <h2 class="mb-4"><i class="fas fa-project-diagram"></i> <?= $title ?></h2>
-    
-    <!-- Mensajes de éxito/error -->
-    <?php if (isset($_GET['success'])): ?>
-        <div class="alert alert-success alert-dismissible fade show">
-            <?= htmlspecialchars(urldecode($_GET['success'])) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
-    
-    <?php if (isset($_GET['error'])): ?>
-        <div class="alert alert-danger alert-dismissible fade show">
-            <?= htmlspecialchars(urldecode($_GET['error'])) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
     
     <!-- Barra de búsqueda y nuevo proyecto -->
     <div class="d-flex justify-content-between mb-4">
@@ -136,9 +123,9 @@
                                        class="btn btn-sm btn-warning" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="?action=admin&method=proyectos&eliminar=<?= $proyecto['id'] ?>" 
-                                       class="btn btn-sm btn-danger" title="Eliminar"
-                                       onclick="return confirm('¿Estás seguro de eliminar este proyecto?')">
+                                    <a href="#" 
+                                       class="btn btn-sm btn-danger btn-eliminar" title="Eliminar"
+                                       data-id="<?= $proyecto['id'] ?>">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
                                 </td>
@@ -153,6 +140,8 @@
 
 <!-- Incluir Chart.js para gráficos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 // Datos para el gráfico de torta
 const estadoData = {
@@ -203,7 +192,50 @@ const config = {
 window.onload = function() {
     const ctx = document.getElementById('estadoChart').getContext('2d');
     new Chart(ctx, config);
+    
+    // Mostrar mensajes de éxito/error con SweetAlert2
+    <?php if (isset($_GET['success'])): ?>
+        Swal.fire({
+            title: 'Éxito',
+            text: '<?= addslashes(htmlspecialchars(urldecode($_GET['success']))) ?>',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    <?php endif; ?>
+    
+    <?php if (isset($_GET['error'])): ?>
+        Swal.fire({
+            title: 'Error',
+            text: '<?= addslashes(htmlspecialchars(urldecode($_GET['error']))) ?>',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    <?php endif; ?>
 };
+
+// Manejar eliminación con SweetAlert2
+document.querySelectorAll('.btn-eliminar').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const idProyecto = this.getAttribute('data-id');
+        
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esta acción!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `?action=admin&method=proyectos&eliminar=${idProyecto}`;
+            }
+        });
+    });
+});
 </script>
 
     </main>

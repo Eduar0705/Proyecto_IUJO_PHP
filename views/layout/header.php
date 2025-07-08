@@ -30,7 +30,7 @@
                         <a class="nav-link active" href="?action=inicio"><i class="bi bi-house-door me-1"></i>Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="?action=projects"> <i class="bi bi-cone-striped me-1"></i>Proyectos</a>
+                        <a class="nav-link" href="?action=inicio&method=projects"> <i class="bi bi-cone-striped me-1"></i>Proyectos</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="?action=inicio&method=about"><i class="bi bi-people me-1"></i>Nosotros</a>

@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Producto</title>
+    <title><?= APP_NAME ?> - Editar Producto</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/inventario.css">
     <link rel="shortcut icon" href="assets/img/Logo1.png" type="image/x-icon">
     <link rel="stylesheet" href="assets/css/contacto.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
     <header class="admin-header">
@@ -30,13 +31,6 @@
                     <i class="fas fa-arrow-left me-1"></i> Volver al listado
                 </a>
             </div>
-
-            <?php if (isset($error)): ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Error!</strong> <?= $error ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
 
             <div class="centered-form">
                 <form method="POST" action="" id="editProductForm">
@@ -87,10 +81,10 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-3 mt-5">
-                        <a href="?action=admin&method=inventario" class="btn-action btn-cancel">
+                        <button type="button" class="btn-action btn-cancel" id="btnCancelar">
                             <i class="fa-solid fa-xmark"></i> Cancelar
-                        </a>
-                        <button type="button" class="btn btn-save btn-action" data-bs-toggle="modal" data-bs-target="#updateConfirmationModal">
+                        </button>
+                        <button type="submit" class="btn btn-save btn-action" id="btnGuardar">
                             <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
                         </button>
                     </div>
@@ -99,91 +93,76 @@
         </div>
     </main>
 
-    <!-- Modal de Confirmación -->
-    <div class="modal fade" id="updateConfirmationModal" tabindex="-1" aria-labelledby="updateConfirmationModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="updateConfirmationModalLabel">
-                        <i class="fas fa-sync-alt me-2"></i> Confirmar Actualización
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="d-flex align-items-start mb-4">
-                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
-                            <i class="fas fa-edit fa-2x text-primary"></i>
-                        </div>
-                        <div>
-                            <h5 class="mb-2">¿Actualizar información del producto?</h5>
-                            <p class="mb-0">Estás a punto de actualizar el producto: <strong><?= htmlspecialchars($producto['nombre']) ?></strong></p>
-                        </div>
-                    </div>
-                    <div class="alert alert-info p-3 mb-0">
-                        <i class="fas fa-info-circle me-2"></i> Verifica que todos los datos sean correctos antes de continuar.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-1"></i> Cancelar
-                    </button>
-                    <button type="button" class="btn btn-primary" id="confirmProductUpdate">
-                        <i class="fas fa-check me-1"></i> Confirmar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal de Éxito -->
-    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="successModalLabel">
-                        <i class="fas fa-check-circle me-2"></i> Actualización Exitosa
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center py-5">
-                    <div class="mb-4">
-                        <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
-                        <h3 class="mb-2">¡Producto actualizado!</h3>
-                        <p class="text-muted mb-0">La información se ha guardado correctamente.</p>
-                    </div>
-                    <div class="d-flex justify-content-center gap-3">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                            <i class="fas fa-times me-1"></i> Cerrar
-                        </button>
-                        <a href="?action=admin&method=inventario" class="btn btn-success">
-                            <i class="fas fa-list me-1"></i> Ver Inventario
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
     <!-- Cargar jQuery primero -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Luego Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/js/menu.js"></script>
     <script>
-        // Confirmar actualización
-        document.getElementById('confirmProductUpdate').addEventListener('click', function() {
-            const confirmationModal = bootstrap.Modal.getInstance(document.getElementById('updateConfirmationModal'));
-            confirmationModal.hide();
-            document.getElementById('editProductForm').submit();
-        });
-        
-        // Mostrar modal de éxito si existe
-        <?php if(isset($success) && $success): ?>
-            document.addEventListener('DOMContentLoaded', function() {
-                new bootstrap.Modal(document.getElementById('successModal')).show();
+        // Mostrar alerta de error si existe
+        <?php if (isset($error)): ?>
+            Swal.fire({
+                title: 'Error',
+                text: '<?= addslashes($error) ?>',
+                icon: 'error',
+                confirmButtonText: 'OK'
             });
         <?php endif; ?>
+
+        // Confirmación al guardar
+        document.getElementById('editProductForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            Swal.fire({
+                title: '¿Actualizar producto?',
+                html: `Estás a punto de actualizar el producto: <strong><?= htmlspecialchars($producto['nombre']) ?></strong><br><br>
+                       <div class="alert alert-info p-2 text-start">
+                           <i class="fas fa-info-circle me-2"></i> Verifica que todos los datos sean correctos antes de continuar.
+                       </div>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '<i class="fas fa-check me-1"></i> Confirmar',
+                cancelButtonText: '<i class="fas fa-times me-1"></i> Cancelar',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'text-start'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Si confirma, enviar el formulario
+                    this.submit();
+                        setTimeout(() => {
+                    window.location.href = '?action=admin&method=inventario';
+                }, 1500);
+                }
+            });
+        });
+
+        // Confirmación al cancelar
+        document.getElementById('btnCancelar').addEventListener('click', function() {
+            Swal.fire({
+                title: '¿Cancelar cambios?',
+                text: "¿Estás seguro de que deseas cancelar? Los cambios no guardados se perderán.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'Continuar editando',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '?action=admin&method=inventario';
+                }
+            });
+        });
+
+        // Mostrar alerta de éxito si existe
+
     </script>
 </body>
 </html>

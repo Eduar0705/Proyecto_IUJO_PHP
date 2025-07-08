@@ -1,85 +1,4 @@
-    <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= APP_NAME ?> - Usuario</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .welcome-card {
-            background: linear-gradient(rgba(247, 246, 246, 0.75), rgba(240, 239, 238, 0.67));
-            border-radius: 10px;
-            padding: 20px;
-            margin: 100px 0 20px 0;
-        }
 
-        .welcome-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px; /* Controla la separación entre texto e imagen */
-            max-width: 100%;
-        }
-
-        .welcome-text {
-            flex: 1;
-            text-align: center;
-        }
-
-        .welcome-text h2 {
-            font-size: 4.0rem;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .welcome-text .lead {
-            font-size: 1.1rem;
-            color: #555;
-        }
-
-        .welcome-img {
-            width: 400px;
-            height: auto;
-            object-fit: contain;
-        }
-        .quick-action-card {
-            transition: transform 0.3s;
-            height: 100%;
-        }
-        .quick-action-card:hover {
-            transform: translateY(-5px);
-        }
-        .status-card {
-            border-left: 4px solid;
-        }
-        .status-pending {
-            border-left-color: #ffc107;
-        }
-        .status-approved {
-            border-left-color: #28a745;
-        }
-        .status-rejected {
-            border-left-color: #dc3545;
-        }
-        .request-item {
-            border-left: 3px solid;
-            padding-left: 10px;
-            margin-bottom: 10px;
-        }
-        .request-pending {
-            border-left-color: #ffc107;
-        }
-        .request-approved {
-            border-left-color: #28a745;
-        }
-        .request-rejected {
-            border-left-color: #dc3545;
-        }
-    </style>
-</head>
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -90,8 +9,6 @@ if (!empty($_SESSION['nombre']) && is_string($_SESSION['nombre'])) {
 }
 $es_users = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 2;
 ?>
-<body>
-    <!-- Menú Superior -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" 
     style="background-color: rgb(255, 255, 255); 
             backdrop-filter: blur(8px);
@@ -121,7 +38,7 @@ $es_users = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 2;
                         </a>
                     </li>
                     <li class="nav-item mx-2">
-                        <a class="nav-link" href="?action=Usuario&method=nuevaSolicitud">
+                        <a class="nav-link" href="?action=users&method=nuevaSolicitud">
                             <i class="fas fa-plus-circle me-1"></i> Nueva Solicitud
                         </a>
                     </li>
@@ -132,7 +49,6 @@ $es_users = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 2;
                     </li>
                 </ul>
 
-                <!-- Dropdown usuario con separación -->
                 <div class="dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="fas fa-user-circle me-2"></i>
@@ -140,8 +56,7 @@ $es_users = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 2;
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="?action=usuario&method=perfil"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="?action=usuario&method=logout"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
+                        <li><a class="dropdown-item" href="?action=inicio"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
                     </ul>
                 </div>
             </div>

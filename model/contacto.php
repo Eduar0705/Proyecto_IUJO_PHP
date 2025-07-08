@@ -10,13 +10,13 @@ class ContactoModel {
         $this->iniciarSesion();
     }
 
-private function iniciarSesion()
+    private function iniciarSesion()
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
     }
-     
+
     public function crearContacto($datos) {
         $nombre = $this->db->real_escape_string($datos['nombre']);
         $email = $this->db->real_escape_string($datos['email']);
@@ -64,8 +64,8 @@ private function iniciarSesion()
     if (!empty($busqueda)) {
         $busqueda = $this->db->real_escape_string($busqueda);
         $sql .= " WHERE nombre LIKE '%$busqueda%' 
-                  OR email LIKE '%$busqueda%' 
-                  OR cargo LIKE '%$busqueda%'";
+                OR email LIKE '%$busqueda%' 
+                OR cargo LIKE '%$busqueda%'";
     }
     
     $result = $this->db->query($sql);

@@ -60,7 +60,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Fecha de Finalización</label>
                         <input type="date" name="fecha_fin" class="form-control"
-                               value="<?= isset($proyecto['fecha_fin']) ? htmlspecialchars($proyecto['fecha_fin']) : '' ?>">
+                                value="<?= isset($proyecto['fecha_fin']) ? htmlspecialchars($proyecto['fecha_fin']) : '' ?>">
                     </div>
                     
                     <div class="col-12">

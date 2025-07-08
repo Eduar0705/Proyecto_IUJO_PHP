@@ -122,8 +122,8 @@ class ProyectoModel {
                         estado, 
                         COUNT(*) as cantidad,
                         ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM proyectos), 2) as porcentaje
-                      FROM proyectos
-                      GROUP BY estado";
+                        FROM proyectos
+                        GROUP BY estado";
         
         $resultEstados = $this->db->query($sqlEstados);
         

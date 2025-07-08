@@ -371,31 +371,6 @@ class Inventariado
         $stmt->close();
     }
 
-    /*
-    public function reporte($search, $categoria_id, $type)
-    {
-        try {
-            // Obtener productos para el reporte
-            $productos = $this->obtenerProductosParaReporte($search, $categoria_id);
-
-            // Generar reporte según el tipo
-            switch ($type) {
-                case 'excel':
-                    $this->generarReporteExcel($productos);
-                    break;
-                case 'pdf':
-                    $this->generarReportePDF($productos);
-                    break;
-                default:
-                    $this->redirigirConError("inventario", "Tipo de reporte no válido");
-            }
-
-        } catch (Exception $e) {
-            error_log("Error en reporte: " . $e->getMessage());
-            $this->redirigirConError("inventario", "Error al generar reporte: " . $e->getMessage());
-        }
-    }*/
-
     /**
      * Obtiene productos para el reporte con filtros aplicados
      */
@@ -427,50 +402,6 @@ class Inventariado
 
         return $this->ejecutarConsultaPreparada($sql, $types, $params);
     }
-
-    /*
-    private function generarReporteExcel($productos)
-    {
-        // Configurar headers para Excel
-        $filename = 'inventario_' . date('Ymd_His') . '.xls';
-        header('Content-Type: application/vnd.ms-excel; charset=utf-8');
-        header("Content-Disposition: attachment; filename=\"{$filename}\"");
-        header('Pragma: no-cache');
-        header('Expires: 0');
-        
-        $this->generarHTMLReporte($productos, 'excel');
-        exit;
-    }
-
-    private function generarHTMLReporte($productos, $formato)
-    {
-        if ($formato === 'excel') {
-            return $this->generarHTMLExcel($productos);
-        }
-    }
-
-    Genera HTML específico para Excel
-    private function generarHTMLExcel($productos)
-    {
-        ob_start();
-        ?>
-        <html xmlns:x='urn:schemas-microsoft-com:office:excel'>
-        <head>
-            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-            <style>
-                td { mso-number-format:\@; }
-                .title { font-size: 16pt; font-weight: bold; text-align: center; }
-                .header { background-color: #f2f2f2; font-weight: bold; }
-            </style>
-        </head>
-        <body>
-            <?php $this->renderEncabezadoReporte(); ?>
-            <?php $this->renderTablaProductos($productos); ?>
-        </body>
-        </html>
-        <?php
-        return ob_get_clean();
-    }*/
 
     /**
      * Renderiza el encabezado del reporte
@@ -536,9 +467,6 @@ class Inventariado
 
     // MÉTODOS AUXILIARES
 
-    /**
-     * Verifica si la petición es POST
-     */
     private function esMetodoPost()
     {
         return $_SERVER['REQUEST_METHOD'] === 'POST';
@@ -563,31 +491,172 @@ class Inventariado
     /**
      * Muestra mensaje de error
      */
-    private function mostrarError($mensaje)
+    private function mostrarError($mensaje, $tipo = 'error') 
     {
-        echo "<script>alert('Error: {$mensaje}');</script>";
+        // Tipos soportados y sus correspondientes estilos Bootstrap
+        $tiposPermitidos = [
+            'error' => ['color' => 'danger', 'icon' => 'exclamation-triangle-fill', 'title' => 'Error'],
+            'success' => ['color' => 'success', 'icon' => 'check-circle-fill', 'title' => 'Éxito'],
+            'warning' => ['color' => 'warning', 'icon' => 'exclamation-triangle-fill', 'title' => 'Advertencia'],
+            'info' => ['color' => 'info', 'icon' => 'info-circle-fill', 'title' => 'Información'],
+            'question' => ['color' => 'primary', 'icon' => 'question-circle-fill', 'title' => 'Confirmación']
+        ];
+        
+        // Validar y establecer tipo por defecto
+        $tipo = array_key_exists(strtolower($tipo), $tiposPermitidos) ? strtolower($tipo) : 'error';
+        $config = $tiposPermitidos[$tipo];
+        
+        echo "
+        <!-- Bootstrap CSS -->
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
+        <!-- Bootstrap Icons -->
+        <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'>
+        <!-- Bootstrap JS Bundle con Popper -->
+        <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
+
+        <div class='position-fixed top-0 end-0 p-3' style='z-index: 1100'>
+            <div id='alertToast' class='toast show' role='alert' aria-live='assertive' aria-atomic='true' data-bs-delay='5000'>
+                <div class='toast-header bg-{$config['color']} text-white'>
+                    <i class='bi bi-{$config['icon']} me-2'></i>
+                    <strong class='me-auto'>{$config['title']}</strong>
+                    <button type='button' class='btn-close btn-close-white' data-bs-dismiss='toast' aria-label='Close'></button>
+                </div>
+                <div class='toast-body'>
+                    {$mensaje}
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var toastEl = document.getElementById('alertToast');
+                var toast = new bootstrap.Toast(toastEl, {
+                    autohide: true,
+                    delay: 5000
+                });
+                toast.show();
+                
+                // Pausar cuando el mouse entra
+                toastEl.addEventListener('mouseenter', function() {
+                    toast._config.autohide = false;
+                    toast._clearTimeout();
+                });
+                
+                // Reanudar cuando el mouse sale
+                toastEl.addEventListener('mouseleave', function() {
+                    toast._config.autohide = true;
+                    toast._config.delay = 3000; // Tiempo restante reducido
+                    toast._setTimeout();
+                });
+            });
+        </script>
+        ";
     }
 
     /**
      * Muestra mensaje de éxito y redirige
      */
-    private function mostrarExitoYRedirigir($mensaje, $metodo)
+    private function mostrarExitoYRedirigir($mensaje, $metodo) 
     {
-        echo "<script>
-            alert('{$mensaje}');
-            window.location.href = '?action=admin&method={$metodo}';
-        </script>";
+        echo "
+        <!-- Bootstrap CSS -->
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
+        <!-- Bootstrap Icons -->
+        <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'>
+        <!-- Bootstrap JS Bundle con Popper -->
+        <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
+
+        <div class='modal fade' id='exitoModal' tabindex='-1' aria-hidden='true' data-bs-backdrop='static'>
+            <div class='modal-dialog modal-dialog-centered'>
+                <div class='modal-content border-success'>
+                    <div class='modal-header bg-success text-white'>
+                        <h5 class='modal-title'>
+                            <i class='bi bi-check-circle-fill me-2'></i>
+                            ¡Éxito!
+                        </h5>
+                    </div>
+                    <div class='modal-body text-center py-4'>
+                        <p class='lead'>{$mensaje}</p>
+                    </div>
+                    <div class='modal-footer'>
+                        <button type='button' class='btn btn-success' onclick='redirigir()'>
+                            <i class='bi bi-check-lg me-2'></i>
+                            Aceptar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Mostrar modal automáticamente
+            document.addEventListener('DOMContentLoaded', function() {
+                var exitoModal = new bootstrap.Modal(document.getElementById('exitoModal'));
+                exitoModal.show();
+            });
+            
+            // Función para redireccionar
+            function redirigir() {
+                window.location.href = '?action=admin&method={$metodo}';
+            }
+            
+            // Redireccionar automáticamente después de 5 segundos
+            setTimeout(redirigir, 5000);
+        </script>
+        ";
     }
 
     /**
      * Muestra mensaje de error y redirige
      */
-    private function mostrarErrorYRedirigir($mensaje, $metodo)
+    private function mostrarErrorYRedirigir($mensaje, $metodo) 
     {
-        echo "<script>
-            alert('Error: {$mensaje}');
-            window.location.href = '?action=admin&method={$metodo}';
-        </script>";
+        echo "
+        <!-- Bootstrap CSS -->
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
+        <!-- Bootstrap Icons -->
+        <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'>
+        <!-- Bootstrap JS Bundle con Popper -->
+        <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
+
+        <div class='modal fade' id='errorModal' tabindex='-1' aria-hidden='true' data-bs-backdrop='static'>
+            <div class='modal-dialog modal-dialog-centered'>
+                <div class='modal-content border-danger'>
+                    <div class='modal-header bg-danger text-white'>
+                        <h5 class='modal-title'>
+                            <i class='bi bi-exclamation-triangle-fill me-2'></i>
+                            ¡Error!
+                        </h5>
+                    </div>
+                    <div class='modal-body text-center py-4'>
+                        <p class='lead'>{$mensaje}</p>
+                    </div>
+                    <div class='modal-footer'>
+                        <button type='button' class='btn btn-danger' onclick='redirigir()'>
+                            <i class='bi bi-arrow-right-circle me-2'></i>
+                            Continuar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Mostrar modal automáticamente
+            document.addEventListener('DOMContentLoaded', function() {
+                var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                errorModal.show();
+            });
+            
+            // Función para redireccionar
+            function redirigir() {
+                window.location.href = '?action=admin&method={$metodo}';
+            }
+            
+            // Redireccionar automáticamente después de 5 segundos
+            setTimeout(redirigir, 5000);
+        </script>
+        ";
     }
 
     /**

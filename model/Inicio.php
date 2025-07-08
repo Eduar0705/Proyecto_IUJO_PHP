@@ -77,16 +77,15 @@ class Inicio
     {
         switch ($idCargo) {
             case 1:
-                header("Location: ?action=admin");
+                $this->redirigirUsuario("Bienvenido, " . $_SESSION['nombre'], "?action=admin");
                 break;
             case 2:
-                header("Location: ?action=users");
+                $this->redirigirUsuario("Bienvenido, " . $_SESSION['nombre'], "?action=users");
                 break;
             default:
                 $this->mostrarErrorLogin("Rol de usuario no válido");
                 return;
         }
-        exit();
     }
 
     /**
@@ -418,17 +417,110 @@ class Inicio
     /**
     * Muestra mensaje de error genérico
     */
-    private function mostrarError($mensaje)
+    private function mostrarError($mensaje, $tipo = 'error') 
     {
-        echo "<script>alert('Error: {$mensaje}');</script>";
+        // Tipos soportados y sus correspondientes estilos Bootstrap
+        $tiposPermitidos = [
+            'error' => ['color' => 'danger', 'icon' => 'exclamation-triangle-fill', 'title' => 'Error'],
+            'success' => ['color' => 'success', 'icon' => 'check-circle-fill', 'title' => 'Éxito'],
+            'warning' => ['color' => 'warning', 'icon' => 'exclamation-triangle-fill', 'title' => 'Advertencia'],
+            'info' => ['color' => 'info', 'icon' => 'info-circle-fill', 'title' => 'Información'],
+            'question' => ['color' => 'primary', 'icon' => 'question-circle-fill', 'title' => 'Confirmación']
+        ];
+        
+        // Validar y establecer tipo por defecto
+        $tipo = array_key_exists(strtolower($tipo), $tiposPermitidos) ? strtolower($tipo) : 'error';
+        $config = $tiposPermitidos[$tipo];
+        
+        echo "
+        <!-- Bootstrap CSS -->
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
+        <!-- Bootstrap Icons -->
+        <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'>
+        <!-- Bootstrap JS Bundle con Popper -->
+        <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
+
+        <div class='position-fixed top-0 end-0 p-3' style='z-index: 1100'>
+            <div id='alertToast' class='toast show' role='alert' aria-live='assertive' aria-atomic='true' data-bs-delay='5000'>
+                <div class='toast-header bg-{$config['color']} text-white'>
+                    <i class='bi bi-{$config['icon']} me-2'></i>
+                    <strong class='me-auto'>{$config['title']}</strong>
+                    <button type='button' class='btn-close btn-close-white' data-bs-dismiss='toast' aria-label='Close'></button>
+                </div>
+                <div class='toast-body'>
+                    {$mensaje}
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var toastEl = document.getElementById('alertToast');
+                var toast = new bootstrap.Toast(toastEl, {
+                    autohide: true,
+                    delay: 5000
+                });
+                toast.show();
+                
+                // Pausar cuando el mouse entra
+                toastEl.addEventListener('mouseenter', function() {
+                    toast._config.autohide = false;
+                    toast._clearTimeout();
+                });
+                
+                // Reanudar cuando el mouse sale
+                toastEl.addEventListener('mouseleave', function() {
+                    toast._config.autohide = true;
+                    toast._config.delay = 3000; // Tiempo restante reducido
+                    toast._setTimeout();
+                });
+            });
+        </script>
+        ";
     }
 
     /**
     * Muestra mensaje de éxito
     */
-    private function mostrarExito($mensaje)
+    private function mostrarExito($mensaje, $tiempo = 3000) 
     {
-        echo "<script>alert('{$mensaje}');</script>";
+        echo "
+        <!-- Bootstrap CSS -->
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
+        <!-- Bootstrap Icons -->
+        <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'>
+        <!-- Bootstrap JS Bundle con Popper -->
+        <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
+
+        <div class='modal fade' id='exitoModal' tabindex='-1' aria-hidden='true' data-bs-backdrop='static'>
+            <div class='modal-dialog modal-dialog-centered'>
+                <div class='modal-content border-success'>
+                    <div class='modal-header bg-success text-white'>
+                        <h5 class='modal-title'>
+                            <i class='bi bi-check-circle-fill me-2'></i>
+                            ¡Éxito!
+                        </h5>
+                    </div>
+                    <div class='modal-body text-center py-4'>
+                        <p class='lead'>{$mensaje}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Mostrar modal automáticamente
+            document.addEventListener('DOMContentLoaded', function() {
+                var exitoModal = new bootstrap.Modal(document.getElementById('exitoModal'));
+                exitoModal.show();
+                
+                // Cerrar automáticamente después del tiempo especificado
+                setTimeout(function() {
+                    exitoModal.hide();
+                }, {$tiempo});
+            });
+        </script>
+        ";
     }
 
     /**
@@ -436,10 +528,65 @@ class Inicio
     */
     private function mostrarErrorLogin($mensaje)
     {
-        echo "<script>
-            alert('{$mensaje}');
-            window.location.href = '?action=inicio&method=login';
-        </script>";
+        echo "
+        <!-- Bootstrap CSS -->
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
+        <!-- Bootstrap Icons -->
+        <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'>
+        <!-- Bootstrap JS Bundle con Popper -->
+        <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
+
+        <style>
+            .centered-modal {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+            }
+            .centered-modal .modal-dialog {
+                margin: 0;
+                max-width: 500px;
+                width: auto;
+            }
+        </style>
+
+        <div class='modal fade centered-modal' id='errorLoginModal' tabindex='-1' aria-labelledby='errorLoginModalLabel' aria-hidden='true' data-bs-backdrop='static'>
+            <div class='modal-dialog modal-dialog-centered'>
+                <div class='modal-content'>
+                    <div class='modal-header bg-danger text-white'>
+                        <h5 class='modal-title' id='errorLoginModalLabel'>
+                            <i class='bi bi-exclamation-triangle-fill me-2'></i>
+                            Error de Acceso
+                        </h5>
+                    </div>
+                    <div class='modal-body text-center py-4'>
+                        <p class='lead'>{$mensaje}</p>
+                    </div>
+                    <div class='modal-footer justify-content-center'>
+                        <button type='button' class='btn btn-danger btn-lg' onclick='redirectToLogin()'>
+                            <i class='bi bi-box-arrow-in-left me-2'></i>
+                            Volver al Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // Mostrar el modal automáticamente
+            document.addEventListener('DOMContentLoaded', function() {
+                var errorModal = new bootstrap.Modal(document.getElementById('errorLoginModal'), {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                errorModal.show();
+            });
+            
+            // Función para redireccionar
+            function redirectToLogin() {
+                window.location.href = '?action=inicio&method=login';
+            }
+        </script>
+        ";
     }
 
     /**
@@ -447,16 +594,238 @@ class Inicio
     */
     private function redirigirConError($metodo, $mensaje)
     {
-        header("Location: ?action=inicio&method={$metodo}&alert=danger&message=" . urlencode($mensaje));
+        echo <<<HTML
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Redireccionando...</title>
+            <!-- Bootstrap CSS -->
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <!-- Bootstrap Icons -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+            <style>
+                body {
+                    background-color: #f8f9fa;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    margin: 0;
+                }
+                .error-container {
+                    max-width: 500px;
+                    width: 100%;
+                    animation: fadeIn 0.5s ease-out;
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(-20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="error-container">
+                <div class="alert alert-danger alert-dismissible fade show shadow">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+                        <div>
+                            <h5 class="alert-heading mb-2">Error</h5>
+                            <p class="mb-0">{$mensaje}</p>
+                        </div>
+                    </div>
+                    <div class="mt-3 text-end">
+                        <div class="spinner-border spinner-border-sm text-danger me-2" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <small class="text-muted">Redireccionando...</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bootstrap JS Bundle with Popper -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script>
+                // Redirigir después de 3 segundos
+                setTimeout(function() {
+                    window.location.href = '?action=inicio&method={$metodo}';
+                }, 3000);
+            </script>
+        </body>
+        </html>
+    HTML;
         exit();
     }
 
     /**
     * Redirige con mensaje de éxito
     */
-    private function redirigirConExito($metodo, $mensaje)
+    private function redirigirConExito($metodo, $mensaje, $tipo = 'success') 
     {
-        header("Location: ?action=inicio&method={$metodo}&alert=success&message=" . urlencode($mensaje));
+        // Configuraciones para cada tipo de alerta
+        $alertConfig = [
+            'success' => [
+                'color' => 'success',
+                'icon' => 'check-circle-fill',
+                'title' => '¡Éxito!',
+                'border' => 'border-success',
+                'progress' => 'bg-success'
+            ],
+            'info' => [
+                'color' => 'info',
+                'icon' => 'info-circle-fill',
+                'title' => 'Información',
+                'border' => 'border-primary',
+                'progress' => 'bg-info'
+            ],
+            'warning' => [
+                'color' => 'warning',
+                'icon' => 'exclamation-triangle-fill',
+                'title' => 'Advertencia',
+                'border' => 'border-warning',
+                'progress' => 'bg-warning'
+            ],
+            'danger' => [
+                'color' => 'danger',
+                'icon' => 'exclamation-octagon-fill',
+                'title' => 'Error',
+                'border' => 'border-danger',
+                'progress' => 'bg-danger'
+            ]
+        ];
+
+        // Validar tipo de alerta
+        $tipo = in_array($tipo, array_keys($alertConfig)) ? $tipo : 'success';
+        $config = $alertConfig[$tipo];
+
+        echo <<<HTML
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>{$config['title']}</title>
+            <!-- Bootstrap CSS -->
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <!-- Bootstrap Icons -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+            <style>
+                body {
+                    background-color: #f8f9fa;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    margin: 0;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                }
+                .alert-container {
+                    max-width: 500px;
+                    width: 100%;
+                    animation: fadeInUp 0.5s ease-out;
+                }
+                @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .alert-card {
+                    border-left: 5px solid var(--bs-{$config['color']});
+                }
+            </style>
+        </head>
+        <body>
+            <div class="alert-container">
+                <div class="card alert-card shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-{$config['icon']} text-{$config['color']} fs-1 me-3"></i>
+                            <div>
+                                <h4 class="card-title mb-0 text-{$config['color']}">{$config['title']}</h4>
+                            </div>
+                        </div>
+                        <p class="card-text">{$mensaje}</p>
+                        <div class="progress mt-3" style="height: 4px;">
+                            <div class="progress-bar {$config['progress']} progress-bar-striped progress-bar-animated" 
+                                role="progressbar" style="width: 100%"></div>
+                        </div>
+                        <div class="text-end mt-2">
+                            <small class="text-muted">Redireccionando...</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bootstrap JS Bundle with Popper -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script>
+                // Redirigir después de 3 segundos (3000ms)
+                setTimeout(function() {
+                    window.location.href = '?action=inicio&method={$metodo}';
+                }, 3000);
+            </script>
+        </body>
+        </html>
+    HTML;
+        exit();
+    }
+    public function redirigirUsuario($mensaje, $url) {
+        echo <<<HTML
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Redireccionando</title>
+            <!-- Bootstrap CSS -->
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <!-- Bootstrap Icons -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+            <style>
+                body {
+                    background-color: #f8f9fa;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    margin: 0;
+                }
+                .redirect-container {
+                    max-width: 500px;
+                    width: 100%;
+                    animation: fadeIn 0.5s ease-out;
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(-20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="redirect-container">
+                <div class="card border-success shadow">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-check-circle-fill text-success mb-3" style="font-size: 3rem;"></i>
+                        <h4 class="card-title mb-3">{$mensaje}</h4>
+                        <div class="progress mb-3" style="height: 5px;">
+                            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                                style="width: 100%"></div>
+                        </div>
+                        <p class="text-muted">Redireccionando...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bootstrap JS Bundle with Popper -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script>
+                setTimeout(function() {
+                    window.location.href = '{$url}';
+                }, 3000);
+            </script>
+        </body>
+        </html>
+    HTML;
         exit();
     }
 }

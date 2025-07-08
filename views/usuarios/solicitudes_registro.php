@@ -4,24 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= APP_NAME ?> - <?= $title ?? '' ?></title>
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="assets/css/config.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/admin.css">
-    <link rel="stylesheet" href="assets/css/config.css">
+
     <link rel="icon" href="assets/img/Logo1.png" type="image/x-icon">
 </head>
 <body>
     <header class="admin-header">
         <?php include 'views/layout/header_Admin.php'; ?>
     </header>
-    
     <div class="sidebar-container">
         <?php include 'views/layout/menuAdmin.php'; ?>
     </div>
     <main class="main-content">
         <div class="container">
-            <h1 class="mt-4">Configuración</h1>
+            <h1 class="mt-4">Solicitudes de Registro</h1>
+            <a href="?action=admin&method=solicitudes" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
             <div class="card mt-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -125,11 +128,13 @@
         </div>
     </div>
 
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="assets/js/menu.js"></script> <!-- Antes de Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="assets/js/menu.js"></script>
     <script src="assets/js/config.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         // Función para confirmar eliminación
         function confirmarEliminacion(event, url) {
