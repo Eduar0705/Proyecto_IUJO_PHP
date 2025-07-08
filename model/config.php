@@ -31,7 +31,7 @@ class Configuracion {
         return $resultado;
     }
     public function buscarSolicitudProy() {
-        $sql = "SELECT * FROM solicitudes";
+        $sql = "SELECT * FROM solicitudes WHERE estado = 'Pendiente'";
         $resultado = $this->bd->query($sql);
         
         if ($resultado === false) {

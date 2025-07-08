@@ -46,7 +46,95 @@ class SolicitudModel {
             $datos['fecha_limite']
         ]);
     }
+    public function solicitudesPropias($id) {
+            $sql = "SELECT *
+                    FROM solicitudes
+                    WHERE id_informacion IN (
+                        SELECT id_solicitud
+                        FROM productos
+                        WHERE id_solicitante = $id
 
+                        UNION
+
+                        SELECT id_solicitud
+                        FROM proyectos
+                        WHERE id_solicitante = $id
+                    );";
+            $resultado = $this->db->query($sql);
+            
+            if ($resultado === false) {
+                throw new Exception("Error en la consulta: " . $this->db->error);
+            }
+            
+            return $resultado;
+        }
+    public function cantSolicitudesPropias($id) {
+        $solicitudes = [];
+            $sql = "SELECT COUNT(*) AS total_rechazadas
+                    FROM solicitudes
+                    WHERE estado = 'Rechazada'
+                    AND id_informacion IN (
+                        SELECT id_solicitud
+                        FROM productos
+                        WHERE id_solicitante = $id
+
+                        UNION
+
+                        SELECT id_solicitud
+                        FROM proyectos
+                        WHERE id_solicitante = $id
+                    );";
+                    $rechazadas = $this->db->query($sql);
+            
+            if ($rechazadas === false) {
+                throw new Exception("Error en la consulta: " . $this->db->error);
+            }
+            $solicitudes['rechazadas'] = $rechazadas->fetch_assoc()['total_rechazadas'];;
+
+            $sql = "SELECT COUNT(*) AS total_aprobadas
+                    FROM solicitudes
+                    WHERE estado = 'Aprobada'
+                    AND id_informacion IN (
+                        SELECT id_solicitud
+                        FROM productos
+                        WHERE id_solicitante = $id
+
+                        UNION
+
+                        SELECT id_solicitud
+                        FROM proyectos
+                        WHERE id_solicitante = $id
+                    );";
+                    $aprobadas = $this->db->query($sql);
+            
+            if ($aprobadas === false) {
+                throw new Exception("Error en la consulta: " . $this->db->error);
+            }
+            $solicitudes['aprobadas'] = $aprobadas->fetch_assoc()['total_aprobadas'];
+
+            $sql = "SELECT COUNT(*) AS total_pendientes
+                    FROM solicitudes
+                    WHERE estado = 'Pendiente'
+                    AND id_informacion IN (
+                        SELECT id_solicitud
+                        FROM productos
+                        WHERE id_solicitante = $id
+
+                        UNION
+
+                        SELECT id_solicitud
+                        FROM proyectos
+                        WHERE id_solicitante = $id
+                    );";
+                    $pendientes = $this->db->query($sql);
+            
+            if ($pendientes === false) {
+                throw new Exception("Error en la consulta: " . $this->db->error);
+            }
+            $solicitudes['pendientes'] = $pendientes->fetch_assoc()['total_pendientes'];
+
+            return $solicitudes;
+    }
     public function contarSolicitudesPorEstado($idUsuario, $estado) {
         $sql = "SELECT COUNT(*) as total FROM solicitudes 
                 WHERE id_informacion = ? AND estado = ?";

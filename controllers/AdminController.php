@@ -30,6 +30,17 @@ class AdminController
     /**
     * Inicia la sesión si no está activa
     */
+    private function validarCargo()
+    {
+        $user_id = $_SESSION['id_cargo'];
+        if(!isset($user_id) || $user_id != 1)
+        {
+            $_SESSION['mensaje'] = "ID inválido o no proporcionadoo";
+            $_SESSION['tipo_mensaje'] = "danger";
+            header("Location: ?action=inicio");
+            exit;
+        }
+    }
     private function iniciarSesion()
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -54,6 +65,7 @@ class AdminController
     public function home() 
     {
         $this->validarSesion();
+        $this->validarCargo();
         $this->modeloDB = new BaseDatos();
         
         $title = "Administración";
@@ -66,6 +78,7 @@ class AdminController
     public function registroDeUsuarios()
     {
         $this->validarSesion();
+        $this->validarCargo();
         
         $title = "Registro de Usuarios";
         $nombre = $_SESSION['nombre'];
@@ -80,6 +93,7 @@ class AdminController
     public function solicitudesUsuario()
     {
         $this->validarSesion();
+        $this->validarCargo();
         $title = "Solicitudes de Cuenta";
         $this->validarSesion();
         
@@ -96,11 +110,14 @@ class AdminController
         {
             $this->modeloDB = new BaseDatos();
         }
+        $this->validarSesion();
+        $this->validarCargo();
         $id = $_GET['id'];
         $conex = $this->modeloDB->conectar();
         
         $sql = "SELECT * FROM solicitud_registro WHERE id = {$id}";
         $resultado = $conex->query($sql);
+        
         $found_user = mysqli_fetch_assoc($resultado);
         
         if($found_user) {
@@ -225,7 +242,6 @@ class AdminController
     public function validarSolicitudProy()
     {
         $id = $_GET['id'];
-        $user_id = $_SESSION['id'];
         // Validamos que el ID exista y sea numérico
         if (!$id || !is_numeric($id)) {
             $_SESSION['mensaje'] = "ID inválido o no proporcionado";
@@ -233,11 +249,20 @@ class AdminController
             header("Location: ?action=admin&method=solicitudes");
             exit;
         }
-
+        $this->validarSesion();
+        $this->validarCargo();
         try {
             if(!isset($this->modeloDB)){
                 $this->modeloDB = new BaseDatos();
             }
+            //cambiar Estado de Solicitud:
+            $sql = "UPDATE solicitudes
+                    SET estado = 'Aprobada'
+                    WHERE id_informacion = ?;";
+            $conex = $this->modeloDB->conectar();
+            $stmt = $conex->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
             
             $sql = "SELECT * FROM solicitudes WHERE id_informacion = ?";
             $conex = $this->modeloDB->conectar();
@@ -251,12 +276,15 @@ class AdminController
         }
         if($resultado)
         {
+            $id_solicitante = $resultado['id_solicitante'];
+            $id_solicitud = $resultado['id_informacion'];
             $conex = $this->modeloDB->conectar();
             switch($resultado['tipo'])
             {
-                case 'comida' || 'oficina':
+                case 'comida':
+                case 'oficina':
                     $datos = json_decode($resultado['datos'], true); // ← convierte a array asociativo
-                    $comentarios = $datos['comentarios'] ?? '';
+                    $comentarios = $datos['comentarios'] ?? $datos['justificacion'];
                     foreach ($datos as $key => $producto) {
                         if (is_numeric($key) && is_array($producto)) {
                             $nombre = $producto['producto'];
@@ -265,12 +293,12 @@ class AdminController
                             if($resultado['tipo'] == 'comida')
                             {
                                 $id_producto = 2;
-                                $this->agregarSolicitudProd($nombre, $unidad_medida, $descripcion, $id_producto, $conex);
+                                $this->agregarSolicitudProd($nombre, $unidad_medida, $descripcion, $id_producto, $id_solicitante, $id_solicitud, $conex);
                             }
                             else if($resultado['tipo'] == 'oficina')
                             {
                                 $id_producto = 1;
-                                $this->agregarSolicitudProd($nombre, $unidad_medida, $descripcion, $id_producto, $conex);    
+                                $this->agregarSolicitudProd($nombre, $unidad_medida, $descripcion, $id_producto, $id_solicitante, $id_solicitud, $conex);    
                             }
                             $this->inventario();
                         }
@@ -283,7 +311,7 @@ class AdminController
                     $descripcion = $datos['descripcion'];
                     $fecha_registro = $resultado['fecha_creacion'];
                     $fecha_fin = $resultado['fecha_inminente'];
-                    $this->agregarSolicitudProy($nombre, $descripcion, $prioridad, $fecha_registro, $fecha_fin, $conex);
+                    $this->agregarSolicitudProy($nombre, $descripcion, $prioridad, $fecha_registro, $fecha_fin, $id_solicitante, $id_solicitud, $conex);
                     $this->proyectos();
                     break;
                 default:
@@ -291,15 +319,16 @@ class AdminController
             }
         }
     }
-    public function agregarSolicitudProy($nombre, $descripcion, $prioridad, $fecha_registro, $fecha_fin, $db)
+    public function agregarSolicitudProy($nombre, $descripcion, $prioridad, $fecha_registro, $fecha_fin, $id_solicitante, $id_solicitud, $db)
     {
-        $consulta = "INSERT INTO proyectos(nombre, descripcion, estado, fecha_inicio, fecha_fin) VALUES (?, ?, ?, ?, ?)";
+        $this->validarSesion();
+        $this->validarCargo();
+        $consulta = "INSERT INTO proyectos(nombre, descripcion, estado, fecha_inicio, fecha_fin, id_solicitante, id_solicitud) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $db->prepare($consulta);
         
         if (!$stmt) {
             throw new Exception("Error preparando inserción: " . mysqli_error($db));
         }
-        $stock = 1;
         switch($prioridad)
         {
             case 'baja':
@@ -316,55 +345,33 @@ class AdminController
                 break;
             default: break;
         }
-        $stmt->bind_param("sssss", $nombre, $descripcion, $prioridad, $fecha_registro, $fecha_fin);
+        $stmt->bind_param("sssssss", $nombre, $descripcion, $prioridad, $fecha_registro, $fecha_fin, $id_solicitante, $id_solicitud);
         $resultado = $stmt->execute();
 
         if ($resultado) {
-                $mensaje = "Producto enviado. Nuevo producto registrado!";
+            $mensaje = "Proyecto enviado. Nuevo proyecto registrado!";
             $this->mostrarExito($mensaje);
             $stmt->close();
             return true;
         } else {
-            $error = "Error al registrar producto: " . mysqli_error($db);
-            $this->mostrarError("Error al registrar producto: {$error}");
+            $error = "Error al registrar proyecto: " . mysqli_error($db);
+            $this->mostrarError("Error al registrar proyecto: {$error}");
             $stmt->close();
             return false;
         }
     }
-    public function agregarSolicitudOfic($nombre, $unidad_medida, $descripcion, $id_producto, $db)
+    public function agregarSolicitudProd($nombre, $unidad_medida, $descripcion, $id_producto, $id_solicitante, $id_solicitud, $db)
     {
-        $consulta = "INSERT INTO productos (nombre, descripcion, cantegoria_id, unidad_medida, stock) VALUES (?, ?, ?, ?, ?)";
+        $this->validarSesion();
+        $this->validarCargo();
+        $consulta = "INSERT INTO productos (nombre, descripcion, cantegoria_id, unidad_medida, stock, id_solicitante, id_solicitud) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $db->prepare($consulta);
         
         if (!$stmt) {
             throw new Exception("Error preparando inserción: " . mysqli_error($db));
         }
         $stock = 1;
-        $stmt->bind_param("sssss", $nombre, $descripcion, $id_producto, $unidad_medida, $stock);
-        $resultado = $stmt->execute();
-
-        if ($resultado) {
-                $mensaje = "Producto enviado. Nuevo producto registrado!";
-            $this->mostrarExito($mensaje);
-            $stmt->close();
-            return true;
-        } else {
-            $error = "Error al registrar producto: " . mysqli_error($db);
-            $this->mostrarError("Error al registrar producto: {$error}");
-            $stmt->close();
-            return false;
-        }
-    }
-    public function agregarSolicitudProd($nombre, $unidad_medida, $descripcion, $id_producto, $db)
-    {
-        $consulta = "INSERT INTO productos (nombre, descripcion, cantegoria_id, unidad_medida, stock) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $db->prepare($consulta);
-        
-        if (!$stmt) {
-            throw new Exception("Error preparando inserción: " . mysqli_error($db));
-        }
-        $stock = 1;
-        $stmt->bind_param("sssss", $nombre, $descripcion, $id_producto, $unidad_medida, $stock);
+        $stmt->bind_param("sssssss", $nombre, $descripcion, $id_producto, $unidad_medida, $stock, $id_solicitante, $id_solicitud);
         $resultado = $stmt->execute();
 
         if ($resultado) {
@@ -380,8 +387,9 @@ class AdminController
         }
     }
     public function eliminarSolicitudProy() {
-            $id = $_GET['id'];
-
+        $id = $_GET['id'];
+        $this->validarSesion();
+        $this->validarCargo();        
         // Validamos que el ID exista y sea numérico
         if (!$id || !is_numeric($id)) {
             $_SESSION['mensaje'] = "ID inválido o no proporcionado";
@@ -395,14 +403,16 @@ class AdminController
                 $this->modeloDB = new BaseDatos();
             }
             
-            $sql = "DELETE FROM solicitudes WHERE id_informacion = ?";
+            $sql = "UPDATE solicitudes
+                    SET estado = 'Rechazada'
+                    WHERE id_informacion = ?;";
             $conex = $this->modeloDB->conectar();
             $stmt = $conex->prepare($sql);
             $stmt->bind_param("i", $id);
             $stmt->execute();
             
             if($stmt->affected_rows > 0) {
-                $_SESSION['mensaje'] = "Solicitud eliminada correctamente";
+                $_SESSION['mensaje'] = "Solicitud rechazada correctamente";
                 $_SESSION['tipo_mensaje'] = "success";
             } else {
                 $_SESSION['mensaje'] = "No se encontró la solicitud con ID $id";
@@ -411,7 +421,7 @@ class AdminController
             
             $stmt->close();
         } catch (Exception $e) {
-            $_SESSION['mensaje'] = "Error al eliminar la solicitud: " . $e->getMessage();
+            $_SESSION['mensaje'] = "Error al rechazar la solicitud: " . $e->getMessage();
             $_SESSION['tipo_mensaje'] = "danger";
         }
         
@@ -419,6 +429,8 @@ class AdminController
         exit;
     }
     public function eliminarSolicitud($id = null) {
+        $this->validarSesion();
+        $this->validarCargo();
         // Si no recibe el parámetro directamente, lo obtenemos de $_GET
         if ($id === null) {
             $id = $_GET['id'] ?? null;
@@ -462,6 +474,8 @@ class AdminController
     }
     public function insertarNuevoUsuario($tabla, $nombre, $usuario, $password, $email, $cedula, $db)
     {
+        $this->validarSesion();
+        $this->validarCargo();
         $consulta = "INSERT INTO {$tabla} (nombre, usuario, clave, email, cedula, id_cargo) VALUES (?, ?, ?, ?, ?, 2)";
         $stmt = $db->prepare($consulta);
         
@@ -488,6 +502,8 @@ class AdminController
     }
     public function registrarUsuario()
     {
+        $this->validarSesion();
+        $this->validarCargo();
         if (!$this->esMetodoPost()) {
             $this->mostrarError("Método no permitido");
             return;
@@ -542,6 +558,7 @@ class AdminController
     public function inventario() 
     {
         $this->validarSesion();
+        $this->validarCargo();
         
         $categoria_id = $_GET['categoria_id'] ?? '';
         $nombre = $_SESSION['nombre'];
@@ -576,7 +593,7 @@ class AdminController
     public function crear()
     {
         $this->validarSesion();
-        
+        $this->validarCargo();
         $this->refrescarDatos();
         $productos = $this->productos;
         $categorias = $this->categorias;
@@ -594,6 +611,7 @@ class AdminController
     public function eliminar()
     {
         $this->validarSesion();
+        $this->validarCargo();
         
         $id = $this->validarId($_GET['id'] ?? null);
         if (!$id) {
@@ -618,6 +636,7 @@ class AdminController
     */
     public function actualizar(){
         $this->validarSesion();
+        $this->validarCargo();
         
         $id = $this->validarId($_GET['id'] ?? null);
         if (!$id) {
@@ -649,6 +668,7 @@ class AdminController
     public function reporte()
     {
         $this->validarSesion();
+        $this->validarCargo();
         
         $parametros = [
             'search' => $_GET['search'] ?? '',
@@ -998,6 +1018,7 @@ class AdminController
     */
     public function solicitudes(){
         $this->validarSesion();
+        $this->validarCargo();
         
         $categoria_id = $_GET['categoria_id'] ?? '';
         $nombre = $_SESSION['nombre'];
@@ -1014,6 +1035,7 @@ class AdminController
     */
     public function configuracion(){
         $this->validarSesion();
+        $this->validarCargo();
         
         $nombre = $_SESSION['nombre'];
         $title = "Configuración";
@@ -1043,6 +1065,7 @@ class AdminController
     public function eliminarUsuario()
     {
         $this->validarSesion();
+        $this->validarCargo();
         
         $id = $_GET['id'] ?? null;
         if (!$id || !is_numeric($id)) {
@@ -1067,60 +1090,64 @@ class AdminController
     * Muestra el inicio de proyectos mensuales
     */
     public function proyectos() {
-    $this->validarSesion();
-    
-    $nombre = $_SESSION['nombre'] ?? 'Usuario';
-    $title = "Proyectos Mensuales";
-    
-    try {
-        $modeloProyectos = new ProyectoModel();
+        $this->validarSesion();
+        $this->validarCargo();
         
-        // Procesar operaciones CRUD si existen
-        if (isset($_GET['eliminar'])) {
-            $this->eliminarProyecto($modeloProyectos);
+        $nombre = $_SESSION['nombre'] ?? 'Usuario';
+        $title = "Proyectos Mensuales";
+        
+        try {
+            $modeloProyectos = new ProyectoModel();
+            
+            // Procesar operaciones CRUD si existen
+            if (isset($_GET['eliminar'])) {
+                $this->eliminarProyecto($modeloProyectos);
+            }
+            
+            // Obtener datos para la vista
+            $busqueda = $_GET['busqueda'] ?? '';
+            $proyectos = $modeloProyectos->obtenerTodos($busqueda);
+            $estadisticas = $modeloProyectos->obtenerEstadisticas();
+            
+            require_once 'views/proyectos/index.php';
+            
+        } catch (Exception $e) {
+            $this->redirigirConError("proyectos", $e->getMessage());
         }
-        
-        // Obtener datos para la vista
-        $busqueda = $_GET['busqueda'] ?? '';
-        $proyectos = $modeloProyectos->obtenerTodos($busqueda);
-        $estadisticas = $modeloProyectos->obtenerEstadisticas();
-        
-        require_once 'views/proyectos/index.php';
-        
-    } catch (Exception $e) {
-        $this->redirigirConError("proyectos", $e->getMessage());
     }
-}
 
 /**
  * Muestra el formulario para crear/editar proyecto
  */
     public function gestionarProyecto() {
-    $this->validarSesion();
-    
-    $id = $this->validarId($_GET['id'] ?? null);
-    $title = $id ? "Editar Proyecto" : "Nuevo Proyecto";
-    $nombre = $_SESSION['nombre'] ?? 'Usuario'; // ← AÑADE ESTA LÍNEA
-    
-    try {
-        $modeloProyectos = new ProyectoModel();
-        $proyecto = $id ? $modeloProyectos->obtenerPorId($id) : null;
+        $this->validarSesion();
+        $this->validarCargo();
         
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->guardarProyecto($modeloProyectos, $id);
+        $id = $this->validarId($_GET['id'] ?? null);
+        $title = $id ? "Editar Proyecto" : "Nuevo Proyecto";
+        $nombre = $_SESSION['nombre'] ?? 'Usuario'; // ← AÑADE ESTA LÍNEA
+        
+        try {
+            $modeloProyectos = new ProyectoModel();
+            $proyecto = $id ? $modeloProyectos->obtenerPorId($id) : null;
+            
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $this->guardarProyecto($modeloProyectos, $id);
+            }
+            
+            require_once 'views/proyectos/formulario.php';
+            
+        } catch (Exception $e) {
+            $this->redirigirConError("proyectos", $e->getMessage());
         }
-        
-        require_once 'views/proyectos/formulario.php';
-        
-    } catch (Exception $e) {
-        $this->redirigirConError("proyectos", $e->getMessage());
     }
-}
 
 /**
  * Guarda un proyecto (creación o actualización)
  */
     private function guardarProyecto($modelo, $id = null) {
+        $this->validarSesion();
+        $this->validarCargo();
         $datos = [
             'nombre' => $_POST['nombre'] ?? '',
             'descripcion' => $_POST['descripcion'] ?? '',
@@ -1153,6 +1180,8 @@ class AdminController
  * Elimina un proyecto
  */
     private function eliminarProyecto($modelo) {
+        $this->validarSesion();
+        $this->validarCargo();
         $id = $this->validarId($_GET['eliminar']);
         if (!$id) {
             throw new Exception("ID de proyecto no válido");
@@ -1174,6 +1203,7 @@ class AdminController
     public function Contacto() {
     
         $this->validarSesion();
+        $this->validarCargo();
         
         $busqueda = $_GET['busqueda'] ?? '';
         $title = "Gestión de Contactos";
@@ -1200,6 +1230,7 @@ class AdminController
     */
     public function crearContacto() {
         $this->validarSesion();
+        $this->validarCargo();
         
         $title = "Agregar Contacto";
         
@@ -1234,6 +1265,7 @@ class AdminController
     */
     public function actualizarContacto() {
         $this->validarSesion();
+        $this->validarCargo();
         
         $id = $this->validarId($_GET['id'] ?? null);
         if (!$id) {
@@ -1273,6 +1305,7 @@ class AdminController
     */
     public function eliminarContacto() {
         $this->validarSesion();
+        $this->validarCargo();
         
         $id = $this->validarId($_GET['id'] ?? null);
         if (!$id) {
@@ -1299,6 +1332,7 @@ class AdminController
     }
     public function gestionSolicitudes() {
         $this->validarSesion();
+        $this->validarCargo();
         
         $filtro = $_GET['filtro'] ?? null;
         $solicitudes = $this->solicitudModel->obtenerTodasSolicitudes($filtro);
@@ -1312,6 +1346,7 @@ class AdminController
      */
     public function detalleSolicitud() {
         $this->validarSesion();
+        $this->validarCargo();
 
         
         $id = $this->validarId($_GET['id'] ?? null);
@@ -1333,6 +1368,7 @@ class AdminController
      */
     public function procesarSolicitud() {
         $this->validarSesion();
+        $this->validarCargo();
         
         if (!$this->esMetodoPost()) {
             $this->redirigirConError("gestionSolicitudes", "Método no permitido");

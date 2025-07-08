@@ -1,23 +1,31 @@
 <div class="container mt-4">
     <h2 class="mb-4"><i class="fas fa-history me-2"></i>Historial de Solicitudes</h2>
-    
-    <!-- Filtros -->
-    <div class="d-flex justify-content-between mb-4">
-        <div class="btn-group">
-            <a href="?action=usuario&method=historial&filtro=todas" class="btn btn-outline-secondary">Todas</a>
-            <a href="?action=usuario&method=historial&filtro=Pendiente" class="btn btn-outline-warning">Pendientes</a>
-            <a href="?action=usuario&method=historial&filtro=Aprobada" class="btn btn-outline-success">Aprobadas</a>
-            <a href="?action=usuario&method=historial&filtro=Rechazada" class="btn btn-outline-danger">Rechazadas</a>
-        </div>
-        
-        <div class="d-flex align-items-center">
-            <label class="me-2">Buscar:</label>
-            <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="Buscar solicitud...">
-        </div>
+    <link rel="stylesheet" href="assets/css/config2.css">
+    <link rel="stylesheet" href="assets/css/menu.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="assets/img/Logo1.png" type="image/x-icon">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top sys-navbar">
+        <?php include 'views/layout/header_User.php'; ?>
+    </nav>
+    <br><br><br>
+<!-- Filtros -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <br>
+<div class="d-flex align-items-center mb-4 w-100">
+    <div class="input-group w-100">
+        <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <input type="text" class="form-control" id="searchInput" placeholder="Buscar Solicitud...">
     </div>
+</div>
+</div>
+
     
     <!-- Tabla de solicitudes -->
-    <?php if (empty($solicitudes)): ?>
+    <?php if (empty($res)): ?>
         <div class="alert alert-info text-center py-4">
             <i class="fas fa-inbox fa-3x mb-3"></i>
             <h4>No hay solicitudes registradas</h4>
@@ -28,18 +36,19 @@
             <table class="table table-striped table-hover" id="solicitudesTable">
                 <thead class="table-light">
                     <tr>
-                        <th>ID</th>
+                        <th>Solicitante</th>
+                        <th>Titulo</th>
                         <th>Tipo</th>
-                        <th>Fecha</th>
+                        <th>Fecha de creación</th>
                         <th>Estado</th>
-                        <th>Descripción</th>
-                        <th>Acciones</th>
+                        <th>Fecha Limite</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($solicitudes as $solicitud): ?>
+                    <?php foreach ($res as $solicitud): $datos = json_decode($solicitud['datos'], true); ?>
                     <tr>
-                        <td><?= $solicitud['ID'] ?></td>
+                        <td><?= $solicitud['solicitante'] ?></td>
+                        <td><?= $solicitud['titulo'] ?></td>
                         <td><?= $solicitud['tipo'] ?></td>
                         <td><?= date('d/m/Y', strtotime($solicitud['fecha_creacion'])) ?></td>
                         <td>
@@ -48,18 +57,7 @@
                                    ($solicitud['estado'] == 'Rechazada' ? 'bg-danger' : 'bg-warning') ?>">
                                 <?= $solicitud['estado'] ?>
                             </span>
-                        </td>
-                        <td>
-                            <div class="descripcion-resumen">
-                                <?= nl2br(htmlspecialchars(substr($solicitud['descripcion'], 0, 100))) ?>
-                                <?php if (strlen($solicitud['descripcion']) > 100): ?>...<?php endif; ?>
-                            </div>
-                        </td>
-                        <td>
-                            <a href="index.php?action=usuario&method=verSolicitud&id=<?= $solicitud['ID'] ?>" 
-                               class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-eye"></i> Ver
-                            </a>
+                            <td><?= $solicitud['fecha_inminente'] ?></td>
                         </td>
                     </tr>
                     <?php endforeach; ?>

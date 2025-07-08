@@ -54,7 +54,7 @@
                             <i class="fas fa-history sys-quick-action__icon"></i>
                             <h5 class="card-title mt-3 mb-2">Mis Solicitudes</h5>
                             <p class="text-muted small mb-3">Revisa el historial y estado de tus solicitudes</p>
-                            <a href="?action=usuario&method=historial" class="sys-btn sys-btn--primary btn-sm">
+                            <a href="?action=users&method=historial" class="sys-btn sys-btn--primary btn-sm">
                                 Ver Historial
                             </a>
                         </div>
@@ -73,7 +73,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h5 class="card-title text-warning mb-2">Pendientes</h5>
-                                    <h2 class="mb-1 fw-bold"><?= $solicitudesPendientes ?? '0' ?></h2>
+                                    <h2 class="mb-1 fw-bold"><?= $num_solicitudes['pendientes'] ?? '0' ?></h2>
                                     <small class="text-muted">En revisión</small>
                                 </div>
                                 <i class="fas fa-clock fa-2x text-warning"></i>
@@ -87,7 +87,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h5 class="card-title text-success mb-2">Aprobadas</h5>
-                                    <h2 class="mb-1 fw-bold"><?= $solicitudesAprobadas ?? '0' ?></h2>
+                                    <h2 class="mb-1 fw-bold"><?= $num_solicitudes['aprobadas'] ?? '0' ?></h2>
                                     <small class="text-muted">Completadas</small>
                                 </div>
                                 <i class="fas fa-check-circle fa-2x text-success"></i>
@@ -101,7 +101,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h5 class="card-title text-danger mb-2">Rechazadas</h5>
-                                    <h2 class="mb-1 fw-bold"><?= $solicitudesRechazadas ?? '0' ?></h2>
+                                    <h2 class="mb-1 fw-bold"><?= $num_solicitudes['rechazadas'] ?? '0' ?></h2>
                                     <small class="text-muted">No aprobadas</small>
                                 </div>
                                 <i class="fas fa-times-circle fa-2x text-danger"></i>

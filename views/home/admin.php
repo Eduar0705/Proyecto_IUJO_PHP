@@ -50,7 +50,7 @@ $es_admin = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 1;
                     <i class="fas fa-calendar-alt"></i>
                     <h3>Proyectos Mensuales</h3>
 
-                <a href="../configuracion.php" class="quick-access-item">
+                <a href="?action=admin&method=configuracion" class="quick-access-item">
                     <i class="fas fa-sliders-h"></i>
                     <h3>Configuración</h3>
                 </a>

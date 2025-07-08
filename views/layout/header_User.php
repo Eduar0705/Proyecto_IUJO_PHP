@@ -33,7 +33,7 @@ $es_users = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 2;
                 <!-- Opciones de navegación -->
                 <ul class="navbar-nav">
                     <li class="nav-item mx-2"> <!-- mx-2 para separación horizontal -->
-                        <a class="nav-link active" href="?action=usuario&method=dashboard">
+                        <a class="nav-link active" href="?action=users&method=home">
                             <i class="fas fa-home me-1"></i> Inicio
                         </a>
                     </li>
@@ -43,7 +43,7 @@ $es_users = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 2;
                         </a>
                     </li>
                     <li class="nav-item mx-2">
-                        <a class="nav-link" href="?action=usuario&method=historial">
+                        <a class="nav-link" href="?action=users&method=historial">
                             <i class="fas fa-history me-1"></i> Historial
                         </a>
                     </li>
@@ -52,10 +52,9 @@ $es_users = isset($_SESSION['id_cargo']) && $_SESSION['id_cargo'] == 2;
                 <div class="dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="fas fa-user-circle me-2"></i>
-                        <?= htmlspecialchars($_SESSION['nombre_usuario'] ?? 'Usuario') ?>
+                        <?= htmlspecialchars($_SESSION['nombre'] ?? 'Usuario') ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="?action=usuario&method=perfil"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
                         <li><a class="dropdown-item" href="?action=inicio"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
                     </ul>
                 </div>

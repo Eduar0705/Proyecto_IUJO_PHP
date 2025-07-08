@@ -15,6 +15,7 @@ class UsersController {
         $this->solicitudModel = new SolicitudModel($this->modeloDB->conectar());
     }
     public function home() {
+        $num_solicitudes = $this->solicitudModel->cantSolicitudesPropias($_SESSION['id']);
         $this->modeloDB = new BaseDatos();
         $title = "Usuarios";
         require_once 'views/home/users.php';
@@ -24,7 +25,6 @@ class UsersController {
         $this->modeloDB = new BaseDatos();
         $title = "Crear Solicitud";
         require 'views/Usuario/nueva_Solicitud.php';
-        eval($this->envioSolicitud());
     }
     public function envioSolicitud() {
         $this->solicitudModel = new SolicitudModel($this->modeloDB->conectar());
@@ -187,5 +187,12 @@ class UsersController {
             });
         </script>
         ";
+    }
+    public function historial()
+    {
+        $title = "Crear Solicitud";
+        $id = $_SESSION['id'];
+        $res = $this->solicitudModel->solicitudesPropias($id);
+        require 'views/Usuario/historial.php';
     }
 }

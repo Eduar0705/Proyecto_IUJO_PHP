@@ -18,7 +18,7 @@
                     <ul class="list-unstyled">
                         <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i> Av. Fuezas Armadas con 57, Barquisimeto</li>
                         <li class="mb-2"><i class="bi bi-telephone-fill me-2"></i> (0251) 442-4548 </li>
-                        <li><i class="bi bi-envelope-fill me-2"></i> info@constructoraCAMBIAR.com</li>
+                        <li><i class="bi bi-envelope-fill me-2"></i> info@invilaraoficial@gmail.com</li>
                     </ul>
                 </div>
                 <div class="col-md-4">
